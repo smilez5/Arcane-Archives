@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.11</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.13</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.11</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.13</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -31,7 +31,7 @@ renderer.domElement.addEventListener('touchmove',e=>e.preventDefault(),{passive:
 renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.65,25.8);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
 scene.add(new THREE.HemisphereLight(0xe0ddff,0x24214c,2.15));for(let z of [-20,0,20]){let l=new THREE.PointLight(0x9874ff,120,42);l.position.set(0,5,z);scene.add(l)};
-// v0.9.11: deterministic hand-painted procedural materials; no remote textures.
+// v0.9.13: deterministic hand-painted procedural materials; no remote textures.
 function archiveTexture(kind){
  const c=document.createElement('canvas');c.width=c.height=256;const q=c.getContext('2d');
  let seed=kind==='wood'?119:kind==='stone'?229:331;
@@ -56,7 +56,7 @@ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=m
 function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
 box(0,-.18,0,56,.3,60,stone);box(0,10.8,0,56,.25,60,stone);for(let x of [-28,28])box(x,5.4,0,.3,10.8,60,stone);for(let z of [-30,30])box(0,5.4,z,56,10.8,.3,stone);
 
-// v0.9.11 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
+// v0.9.13 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
 // Decorative wall panels do not change collision geometry, stairs or interaction rays.
 const daylightGlass=new THREE.MeshBasicMaterial({color:0x7fe9ff,transparent:true,opacity:.86,depthWrite:false,side:THREE.DoubleSide});
 const daylightCore=new THREE.MeshBasicMaterial({color:0xfff1c5,transparent:true,opacity:.40,depthWrite:false,side:THREE.DoubleSide});
@@ -95,6 +95,11 @@ function addSunWindow(side,z,level){
   scene.add(patch);sunlightPatches.push(patch);
 }
 for(const z of [-20,-8,4,16])for(const side of [-1,1])for(const level of [0,1])addSunWindow(side,z,level);
+// Rounded ornamental crowns distinguish the windows from plain glowing rectangles.
+const lancet=new THREE.TorusGeometry(.72,.06,6,20,Math.PI);
+for(const z of [-20,-8,4,16])for(const side of [-1,1])for(const level of [0,1]){
+ const arch=new THREE.Mesh(lancet,archTrim);arch.position.set(side*27.5,(level?7.38:2.38)+1.23,z);arch.rotation.y=Math.PI/2;scene.add(arch);
+}
 // Ambient daylight softens the darker fantasy lighting without overexposing the archive.
 const jewelFill=new THREE.DirectionalLight(0x65dfff,.52);jewelFill.position.set(16,9,12);scene.add(jewelFill);
 const sunlight=new THREE.DirectionalLight(0xffd7a1,1.3);
@@ -172,6 +177,18 @@ for(const z of [stairZ0,stairZ1])for(const x of [-2.53,2.53]){
 for(let z=-25;z<=25;z+=10){box(0,10.5,z,54,.28,.3,wood);
   for(let x of [-17,0,17]){let lamp=new THREE.PointLight(0xffd29a,32,19,2);lamp.position.set(x,9.6,z);scene.add(lamp);
     box(x,9.9,z,.5,.4,.5,gold)}}
+// Curved architectural elements, stone colonnades and distinct genre carpet runners.
+const archMat=material(0x77638e),archTrim=material(0xe7be7b);
+const pillarGeometry=new THREE.CylinderGeometry(.23,.3,3.0,10),capGeometry=new THREE.CylinderGeometry(.36,.36,.15,12);
+for(const level of [0,3.88])for(const z of [-21,-9,3,15])for(const x of [-25.8,25.8]){
+ const pillar=new THREE.Mesh(pillarGeometry,archMat);pillar.position.set(x,level+1.5,z);scene.add(pillar);
+ const cap=new THREE.Mesh(capGeometry,archTrim);cap.position.set(x,level+3.05,z);scene.add(cap);
+ const arch=new THREE.Mesh(new THREE.TorusGeometry(1.1,.09,6,20,Math.PI),archMat);arch.position.set(x,level+3.05,z);arch.rotation.y=Math.PI/2;scene.add(arch);
+}
+const rugColors=[0xa74682,0x248e9a,0xb34337,0x7845ac,0x315bc5,0xb78a35,0x36865d,0x86664e];
+for(let g=0;g<8;g++){const x=[-23,-18,-13,-8,8,13,18,23][g];for(const level of [0,1]){
+ const rug=new THREE.Mesh(new THREE.PlaneGeometry(1.45,45),new THREE.MeshStandardMaterial({color:rugColors[g],roughness:.96,side:THREE.DoubleSide}));rug.rotation.x=-Math.PI/2;rug.position.set(x,level?3.907:.055,0);scene.add(rug);
+}}
 // Every series has a distinct, stable color (not merely one color per genre).
 const seriesColor=series=>new THREE.Color().setHSL(((series*0.61803398875)%1),.67+(series%4)*.055,.47+(series%3)*.065);
 const shelves=[],shelfGroup=new THREE.Group();scene.add(shelfGroup);
@@ -271,7 +288,13 @@ const coverTextures=genres.map((genre,g)=>{
 });
 const coverGeometry=new THREE.BoxGeometry(.38,.045,.49);
 const coverMats=coverTextures.map(t=>new THREE.MeshStandardMaterial({map:t,roughness:.8,side:THREE.DoubleSide}));
-const looseMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(.39,.13,.51),material(0xd9c6a4),TOTAL),looseIds=[],loosePositions=[];
+// Shared rounded hardback shape: bevels replace the box silhouette while preserving raycasting.
+function bookShape(){const sh=new THREE.Shape();sh.moveTo(-.16,-.255);sh.lineTo(.16,-.255);sh.quadraticCurveTo(.195,-.255,.195,-.22);sh.lineTo(.195,.22);sh.quadraticCurveTo(.195,.255,.16,.255);sh.lineTo(-.16,.255);sh.quadraticCurveTo(-.195,.255,-.195,.22);sh.lineTo(-.195,-.22);sh.quadraticCurveTo(-.195,-.255,-.16,-.255);const g=new THREE.ExtrudeGeometry(sh,{depth:.095,bevelEnabled:true,bevelThickness:.012,bevelSize:.012,bevelSegments:2,curveSegments:3});g.rotateX(-Math.PI/2);g.translate(0,-.045,0);return g}
+const looseMesh=new THREE.InstancedMesh(bookShape(),material(0xd9c6a4),TOTAL),looseIds=[],loosePositions=[];
+const loosePages=new THREE.InstancedMesh(new THREE.BoxGeometry(.32,.06,.44),material(0xf4e5c7),TOTAL);
+const looseBindings=new THREE.InstancedMesh(new THREE.BoxGeometry(.03,.14,.49),material(0xe9bb6d),TOTAL);
+scene.add(loosePages,looseBindings);
+
 const looseCovers=coverMats.map(m=>{const mesh=new THREE.InstancedMesh(coverGeometry,m,TOTAL);mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);return mesh});
 const scatterPos=id=>{let k=(id*1664525+1013904223)>>>0;return {x:-25+((k%10000)/10000)*50,z:-24+(((Math.floor(k/10000)*73+id*97)%10000)/10000)*48}};
 const allLoosePositions=Array.from({length:TOTAL},(_,id)=>scatterPos(id));
@@ -286,6 +309,9 @@ function refreshLoose(){
     dummy.scale.setScalar(visible?1:0);
     dummy.updateMatrix();looseMesh.setMatrixAt(id,dummy.matrix);
     looseMesh.setColorAt(id,seriesColor(catalog[id].series));
+    dummy.position.set(p.x,.085+(id%3)*.06,p.z);dummy.rotation.set(0,(id%7)*.36,0);dummy.scale.setScalar(visible?1:0);dummy.updateMatrix();loosePages.setMatrixAt(id,dummy.matrix);
+    dummy.position.set(p.x-.18,.09+(id%3)*.06,p.z);dummy.updateMatrix();looseBindings.setMatrixAt(id,dummy.matrix);
+
     for(let g=0;g<8;g++){
       dummy.position.set(p.x,.157+(id%3)*.06,p.z);
       dummy.rotation.set(0,(id%7)*.36,0);
@@ -297,6 +323,7 @@ function refreshLoose(){
   looseMesh.count=TOTAL;
   looseMesh.instanceMatrix.needsUpdate=true;
   looseMesh.instanceColor.needsUpdate=true;
+  loosePages.instanceMatrix.needsUpdate=true;looseBindings.instanceMatrix.needsUpdate=true;
   for(const cover of looseCovers){cover.instanceMatrix.needsUpdate=true;cover.instanceColor.needsUpdate=true}
 }
 function syncLoose(){} // World objects stay put while walking.
@@ -350,7 +377,7 @@ function animateBookFlights(dt){
 
 const labels=new Map();function sign(text){let c=document.createElement('canvas');c.width=512;c.height=128;let a=c.getContext('2d');a.fillStyle='#261c35';a.fillRect(0,0,512,128);a.strokeStyle='#d7b577';a.lineWidth=7;a.strokeRect(3,3,506,122);a.fillStyle='#ffe2a5';a.font='bold 38px system-ui';a.textAlign='center';a.fillText(text,256,79);return new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true})}
 for(let g=0;g<8;g++){let sprite=new THREE.Sprite(sign(genres[g]));sprite.position.set(-24+g*6.5,3.2,-27);sprite.scale.set(3.5,.85,1);scene.add(sprite)}
-// v0.9.11 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
+// v0.9.13 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
 // Shared geometries and instancing keep the extra GPU cost low on mobile Safari.
 const decorGold=new THREE.MeshStandardMaterial({color:0xb78d52,metalness:.56,roughness:.37});
 const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
@@ -581,6 +608,7 @@ $('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 3,0
 // below the staircase without being snapped onto its steps.
 let stairTravel=false,upperLevel=false;
 const STAIR_BOTTOM=22.4,STAIR_TOP=9.75,GROUND_EYE=1.65,UPPER_EYE=5.35;
+const STAIR_WALK_HALF_WIDTH=2.13; // visible treads span x +/-2.275
 function stairHeight(z){return GROUND_EYE+(UPPER_EYE-GROUND_EYE)*Math.max(0,Math.min(1,(STAIR_BOTTOM-z)/(STAIR_BOTTOM-STAIR_TOP)))}
 let prev=performance.now(),hudTick=0;
 function loop(now){
@@ -597,13 +625,16 @@ function loop(now){
   const oldX=camera.position.x,oldZ=camera.position.z;
   function can(a,b){
    if(Math.abs(a)>26.3||Math.abs(b)>28.2)return false;
-   const inStairLane=Math.abs(a)<1.7;
+   const inStairLane=Math.abs(a)<=STAIR_WALK_HALF_WIDTH;
    // A traveller on the steps cannot leave through the stair rails.
    if(stairTravel&&b>STAIR_TOP&&b<STAIR_BOTTOM&&!inStairLane)return false;
    // The upper floor has a real central opening: only the stair path can cross it.
    // Allow the top landing to be entered before stairTravel switches on.
    // The old guard rejected this movement, so descending could never start.
    if(upperLevel&&!stairTravel&&inStairLane&&b>STAIR_TOP+.7&&b<23)return false;
+   // Prevent ground-level clipping through stair treads from a diagonal side approach.
+   // Enter the ramp only by crossing its lower entrance, not through the side rails.
+   if(!upperLevel&&!stairTravel&&inStairLane&&b<STAIR_BOTTOM&&b>STAIR_TOP+.7 && !(oldZ>=STAIR_BOTTOM&&dz<0))return false;
    const collisionFloor=upperLevel?1:0;
    for(const sh of shelves){if(sh.floor!==collisionFloor)continue;
     if(Math.abs(a-sh.x)<1.43&&Math.abs(b-sh.z)<.62)return false;
@@ -613,11 +644,11 @@ function loop(now){
   const nx=oldX+dx,nz=oldZ+dz;
   if(can(nx,oldZ))camera.position.x=nx;
   if(can(camera.position.x,nz))camera.position.z=nz;
-  const centered=Math.abs(camera.position.x)<1.72;
+  const centered=Math.abs(camera.position.x)<=STAIR_WALK_HALF_WIDTH;
   // Only enter the staircase from a landing, never by walking sideways underneath it.
   if(!stairTravel&&centered){
-   if(!upperLevel&&oldZ>=STAIR_BOTTOM-.18&&camera.position.z<STAIR_BOTTOM&&camera.position.z>=STAIR_BOTTOM-.55)stairTravel=true;
-   else if(upperLevel&&oldZ<=STAIR_TOP+.45&&camera.position.z>STAIR_TOP&&camera.position.z<=STAIR_TOP+.65)stairTravel=true;
+   if(!upperLevel&&oldZ>=STAIR_BOTTOM&&camera.position.z<STAIR_BOTTOM&&dz<0)stairTravel=true;
+   else if(upperLevel&&oldZ<=STAIR_TOP+.65&&camera.position.z>STAIR_TOP&&dz>0)stairTravel=true;
   }
   if(stairTravel){
    if(camera.position.z<=STAIR_TOP){stairTravel=false;upperLevel=true}
@@ -626,7 +657,7 @@ function loop(now){
   const desired=stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE);
   camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*9);
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.11: Sunlit Windows loaded · original gameplay preserved!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.13: Diagonal stair approach improved!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';
