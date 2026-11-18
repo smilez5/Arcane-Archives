@@ -1,0 +1,991 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.21</title><style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.21</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+<script type="module">
+const statusBox=document.createElement('div');
+statusBox.id='engineStatus';statusBox.setAttribute('role','status');
+statusBox.style.cssText='position:fixed;z-index:20;top:42%;left:8%;width:84%;padding:14px;border:1px solid #c6a567;border-radius:12px;background:#211831;color:#ffebc6;text-align:center;line-height:1.5;font-size:14px';
+statusBox.textContent='Loading the mystical archive…';document.body.appendChild(statusBox);
+window.addEventListener('error',e=>{statusBox.style.display='block';statusBox.textContent='Game error: '+(e.message||'Unknown error')});
+window.addEventListener('unhandledrejection',e=>{statusBox.style.display='block';statusBox.textContent='Loading error: '+String(e.reason?.message||e.reason||'Unknown error')});
+try {
+let THREE,loadingError;
+for(const url of [
+ 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js',
+ 'https://unpkg.com/three@0.160.1/build/three.module.js',
+ 'https://esm.sh/three@0.160.1'
+]){
+ try{THREE=await import(url);break}catch(e){loadingError=e}
+}
+if(!THREE)throw new Error('3D engine could not load. Check internet access and Safari content blockers. '+String(loadingError?.message||''));
+statusBox.textContent='Building shelves and scattered books…';
+const $=id=>document.getElementById(id), TOTAL=3072, SHELVES=400, SERIES=384, genres=['Romance','Monsterology','Destructive Magic','Necromancy','Astronomy','Alchemy','Botany','Chronicles'];
+// Exactly 384 series of 8 volumes = 3072 unique catalog records; 400 shelf slots, 16 reserve shelves.
+const catalog=Array.from({length:TOTAL},(_,id)=>({id,series:Math.floor(id/8),vol:id%8+1,genre:Math.floor(id/8)%8}));
+const storage='arcane_archives_v07';let saved={};try{saved=JSON.parse(localStorage.getItem(storage)||'{}')}catch{};
+let placed=new Set((saved.placed||[]).filter(x=>Number.isInteger(x)&&x>=0&&x<TOTAL)),inventory=(saved.inventory||[]).filter(x=>Number.isInteger(x)&&x>=0&&x<TOTAL&&!placed.has(x)).slice(0,50),skill=saved.skill||{highlight:0,sort:0,assemble:0},xp=Number(saved.xp)||0,points=Number(saved.points)||0,keys=new Set(saved.keys||[]),chests=new Set(saved.chests||[]),active=0,dropped=saved.dropped||{},xpSpent=Math.max(0,Number(saved.xpSpent)||0),xpPerks=saved.xpPerks||{},waypoint=null;
+const save=()=>{try{localStorage.setItem(storage,JSON.stringify({placed:[...placed],inventory,skill,xp,xpSpent,xpPerks,points,keys:[...keys],chests:[...chests],dropped}))}catch{toast('Save storage full; progress may not persist')}};
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x10132e);scene.fog=new THREE.Fog(0x10132e,20,90);const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.07,130),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.3));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.23;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);renderer.domElement.style.touchAction='none';
+for(const type of ['gesturestart','gesturechange','gestureend'])document.addEventListener(type,e=>e.preventDefault(),{passive:false});
+renderer.domElement.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.65,25.8);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
+scene.add(new THREE.HemisphereLight(0xe0ddff,0x24214c,2.15));for(let z of [-20,0,20]){let l=new THREE.PointLight(0x9874ff,120,42);l.position.set(0,5,z);scene.add(l)};
+// v0.9.21: deterministic hand-painted procedural materials; no remote textures.
+function archiveTexture(kind){
+ const c=document.createElement('canvas');c.width=c.height=256;const q=c.getContext('2d');
+ let seed=kind==='wood'?119:kind==='stone'?229:331;
+ const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+ if(kind==='wood'){
+  q.fillStyle='#715039';q.fillRect(0,0,256,256);
+  for(let i=0;i<165;i++){let y=rand()*256;q.strokeStyle=rand()>.5?'rgba(31,17,13,.16)':'rgba(238,185,116,.11)';q.lineWidth=.4+rand()*2;q.beginPath();q.moveTo(0,y);q.bezierCurveTo(75,y+rand()*7-3,160,y+rand()*9-4,256,y+rand()*6-3);q.stroke()}
+  for(let i=0;i<6;i++){let x=rand()*256,y=rand()*256;q.strokeStyle='rgba(39,21,15,.28)';q.beginPath();q.ellipse(x,y,3+rand()*8,1+rand()*3,0,0,7);q.stroke()}
+ }else if(kind==='stone'){
+  q.fillStyle='#393746';q.fillRect(0,0,256,256);
+  for(let i=0;i<2500;i++){let v=Math.floor(70+rand()*75);q.fillStyle=`rgba(${v},${v-5},${v+10},${.025+rand()*.09})`;q.fillRect(rand()*256,rand()*256,1+rand()*4,1+rand()*4)}
+  q.strokeStyle='rgba(10,8,18,.3)';q.lineWidth=3;for(let y=0;y<256;y+=64){q.beginPath();q.moveTo(0,y);q.lineTo(256,y);q.stroke();let offset=(y/64%2)*64;for(let x=offset;x<256;x+=128){q.beginPath();q.moveTo(x,y);q.lineTo(x,y+64);q.stroke()}}
+ }else{
+  // Real plank layout with grain, joints, nailheads and restrained color variation.
+  q.fillStyle='#37271f';q.fillRect(0,0,256,256);
+  for(let row=0;row<8;row++){
+   const y=row*32,shift=(row%3)*43;
+   const tones=['#76513a','#825b42','#684631','#906449','#79543e','#6c4936'];
+   q.fillStyle=tones[(row*3+2)%tones.length];q.fillRect(0,y+2,256,29);
+   for(let i=0;i<24;i++){
+    const gy=y+4+rand()*24;
+    q.strokeStyle=rand()>.5?'rgba(32,18,14,.17)':'rgba(232,184,127,.13)';
+    q.lineWidth=.4+rand()*.7;
+    q.beginPath();q.moveTo(0,gy);q.bezierCurveTo(90,gy+rand()*3,175,gy-rand()*3,256,gy+rand()*2);q.stroke();
+   }
+   q.strokeStyle='rgba(24,14,13,.52)';q.lineWidth=2;
+   q.beginPath();q.moveTo(0,y+1);q.lineTo(256,y+1);q.stroke();
+   for(let x=shift;x<256;x+=128){
+    q.fillStyle='rgba(19,13,12,.55)';q.fillRect(x,y+2,2,28);
+    for(const ny of [y+6,y+26]){
+     q.fillStyle='rgba(21,18,16,.5)';q.beginPath();q.arc(x+6,ny,1.1,0,Math.PI*2);q.fill();
+    }
+   }
+  }
+  for(let k=0;k<7;k++){
+   const x=rand()*256,y=rand()*256;
+   q.strokeStyle='rgba(35,21,16,.23)';q.lineWidth=.9;
+   q.beginPath();q.ellipse(x,y,3+rand()*7,1.1+rand()*1.4,0,0,Math.PI*2);q.stroke();
+  }
+ }
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=2;return t;
+}
+const oakTexture=archiveTexture('wood'),masonryTexture=archiveTexture('stone'),floorTexture=archiveTexture('floor');
+const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=material(0x503075),gold=material(0xffca68),stone=new THREE.MeshStandardMaterial({map:masonryTexture,roughness:.98}),shelfMat=new THREE.MeshStandardMaterial({map:oakTexture,color:0xc5a5ef,roughness:.78}),bookMats=[0xb96877,0x507b82,0x9b5742,0x6d548b,0x627f57,0xb38d4d,0x52649b,0x8b6755].map(material);
+function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
+box(0,-.18,0,56,.3,60,stone);box(0,10.8,0,56,.25,60,stone);for(let x of [-28,28])box(x,5.4,0,.3,10.8,60,stone);for(let z of [-30,30])box(0,5.4,z,56,10.8,.3,stone);
+
+// v0.9.21 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
+// Decorative wall panels do not change collision geometry, stairs or interaction rays.
+const daylightGlass=new THREE.MeshBasicMaterial({color:0x7fe9ff,transparent:true,opacity:.86,depthWrite:false,side:THREE.DoubleSide});
+const daylightCore=new THREE.MeshBasicMaterial({color:0xfff1c5,transparent:true,opacity:.40,depthWrite:false,side:THREE.DoubleSide});
+const windowFrame=material(0x5b4139),windowLead=material(0xc7a56d);
+const sunlightMat=new THREE.MeshBasicMaterial({color:0xffdfa0,transparent:true,opacity:.115,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+const sunbeamMat=new THREE.MeshBasicMaterial({color:0xffe2a6,transparent:true,opacity:.052,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+const sunlightPatches=[],sunbeamMeshes=[];
+function addSunWindow(side,z,level){
+  const x=side*27.77,cy=level?7.38:2.38,glassHeight=2.48;
+  // Luminous glass set just inside the existing wall, with a lancet-style apex.
+  box(x,cy,z,.055,glassHeight,1.45,daylightGlass);
+  box(x-side*.065,cy,z,.012,glassHeight*.85,1.14,daylightCore);
+  for(const edge of [-.79,.79])box(x-side*.13,cy,z+edge,.18,glassHeight+.32,.14,windowFrame);
+  for(const edge of [-1.35,1.35])box(x-side*.13,cy+edge,z,.18,.13,1.75,windowFrame);
+  box(x-side*.16,cy,z,.19,.065,1.56,windowLead);
+  box(x-side*.16,cy+.56,z,.19,.055,1.56,windowLead);
+  box(x-side*.16,cy,z,.19,glassHeight+.12,.045,windowLead);
+  // Three small stained-glass jewels: a warm sun amid cool blue glass.
+  for(let k=-1;k<=1;k++){
+    const gem=new THREE.Mesh(new THREE.SphereGeometry(.12,7,6),
+      new THREE.MeshBasicMaterial({color:k===0?0xffe2a0:0x77cdd8,transparent:true,opacity:.85}));
+    gem.position.set(x-side*.18,cy+.88,z+k*.4);scene.add(gem);
+  }
+  // Elliptical shafts aimed diagonally toward the floor. No costly real-time shadows.
+  const start=new THREE.Vector3(x-side*.2,cy-.12,z);
+  const end=new THREE.Vector3(x-side*8.2,level?3.91:.051,z+(side>0?-2.2:2.2));
+  const direction=new THREE.Vector3().subVectors(end,start),distance=direction.length();
+  const beam=new THREE.Mesh(new THREE.ConeGeometry(1.3,distance,8,1,true),sunbeamMat);
+  beam.position.copy(start).add(end).multiplyScalar(.5);
+  beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),direction.clone().normalize());
+  scene.add(beam);sunbeamMeshes.push(beam);
+  const patch=new THREE.Mesh(new THREE.CircleGeometry(2.5,24),sunlightMat);
+  patch.rotation.x=-Math.PI/2;
+  patch.scale.set(1,.48,1);
+  patch.position.set(end.x,level?3.895:.057,end.z);
+  scene.add(patch);sunlightPatches.push(patch);
+}
+for(const z of [-20,-8,4,16])for(const side of [-1,1])for(const level of [0,1])addSunWindow(side,z,level);
+// Rounded ornamental crowns distinguish the windows from plain glowing rectangles.
+const archTrim=material(0xe7be7b);
+const lancet=new THREE.TorusGeometry(.72,.06,6,20,Math.PI);
+for(const z of [-20,-8,4,16])for(const side of [-1,1])for(const level of [0,1]){
+ const arch=new THREE.Mesh(lancet,archTrim);arch.position.set(side*27.5,(level?7.38:2.38)+1.23,z);arch.rotation.y=Math.PI/2;scene.add(arch);
+}
+// Ambient daylight softens the darker fantasy lighting without overexposing the archive.
+const jewelFill=new THREE.DirectionalLight(0x65dfff,.52);jewelFill.position.set(16,9,12);scene.add(jewelFill);
+const sunlight=new THREE.DirectionalLight(0xffd7a1,1.3);
+sunlight.position.set(-18,16,-8);scene.add(sunlight);
+
+// Solid second-storey floor with a dedicated central stairwell opening.
+// The earlier four perimeter strips left a huge uncovered void above the ground floor.
+// v0.9.21 flooring: scale the wood texture by actual world dimensions.
+// Geometry remains identical so stairs, collisions and shelf positions are untouched.
+const trim=material(0xffc86b),plank=material(0x7255a6);
+function floorPanel(x,y,z,w,h,d){
+ const tex=floorTexture.clone();tex.needsUpdate=true;
+ tex.repeat.set(Math.max(1,w/4),Math.max(1,d/4));
+ const mat=new THREE.MeshStandardMaterial({map:tex,roughness:.87,metalness:0});
+ return box(x,y,z,w,h,d,mat);
+}
+floorPanel(-15.4,3.70,0,25.2,.34,56);
+floorPanel(15.4,3.70,0,25.2,.34,56);
+floorPanel(0,3.70,-9.75,5.6,.34,36.5);
+floorPanel(0,3.70,25.5,5.6,.34,5);
+floorPanel(0,-.012,0,55,.08,58);
+// Flush geometric stone-and-brass threshold inlays at four open entry bays.
+const stoneTile=new THREE.MeshStandardMaterial({map:masonryTexture,color:0x9696a4,roughness:.96});
+const brassStrip=new THREE.MeshStandardMaterial({color:0xd6a95f,metalness:.45,roughness:.43});
+for(const level of [0,1]){
+ const y=level?3.884:.033;
+ for(const z of [-24,24]){
+  // Flat and purely decorative: no new collision geometry.
+  const mat=new THREE.Mesh(new THREE.PlaneGeometry(4.6,1.15),stoneTile);
+  mat.rotation.x=-Math.PI/2;mat.position.set(0,y,z);scene.add(mat);
+  for(const dz of [-.61,.61]){
+   const line=new THREE.Mesh(new THREE.PlaneGeometry(4.75,.045),brassStrip);
+   line.rotation.x=-Math.PI/2;line.position.set(0,y+.008,z+dz);scene.add(line);
+  }
+ }
+}
+// Gold railing around the stair opening, with a gap at the bottom landing.
+for(const x of [-2.85,2.85]){box(x,4.48,15.75,.12,.12,14.5,trim);
+  for(let z=9;z<23;z+=2.2)box(x,4.16,z,.1,.62,.1,trim)}
+// Top stair entrance stays open: no cross-rail across the walking path.
+// Solid top landing bridges the upper-floor edge to the first stair tread.
+// This closes the previously uncovered opening between z=8.5 and the first tread.
+const landingOak=material(0x694194),landingBrass=material(0xffd078);
+box(0,3.79,9.16,4.55,.18,1.48,landingOak); // surface 3.88, flush with upper floor
+box(0,3.893,9.87,4.55,.026,.065,landingBrass);
+// Guard the exposed edges of the top landing without blocking its entrance.
+for(const x of [-2.51,2.51]){
+  box(x,4.41,9.18,.12,1.05,.13,wood);
+  box(x,4.95,9.18,.13,.12,1.5,trim);
+}
+// v0.9.6: Visible oak staircase, individual treads, brass edge details and sloping handrails.
+const stairOak=new THREE.MeshStandardMaterial({map:oakTexture,roughness:.75}),stairRiser=material(0x352352),stairGold=material(0xffd078);
+const stairZ0=9.75,stairZ1=22.4,stairRise=3.7,stairSteps=19;
+for(let i=0;i<stairSteps;i++){
+ const z=stairZ0+(i+.5)*(stairZ1-stairZ0)/stairSteps;
+ const top=3.88-(3.88-.12)*(i/stairSteps);
+ const next=3.88-(3.88-.12)*((i+1)/stairSteps);
+ // Each step is an opaque horizontal tread with a matching riser face.
+ box(0,top-.065,z,4.55,.13,(stairZ1-stairZ0)/stairSteps+.025,stairOak);
+ box(0,(top+next)/2-.06,z+(stairZ1-stairZ0)/stairSteps/2,4.55,top-next,.10,stairRiser);
+ box(0,top+.008,z-(stairZ1-stairZ0)/stairSteps*.39,4.5,.025,.045,stairGold);
+}
+function slopedRail(x){
+ const a=new THREE.Vector3(x,4.93,stairZ0),b=new THREE.Vector3(x,.98,stairZ1);
+ const d=new THREE.Vector3().subVectors(b,a);
+ const beam=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,d.length(),8),stairGold);
+ beam.position.copy(a).add(b).multiplyScalar(.5);
+ beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());scene.add(beam);
+ for(let i=0;i<=10;i++){
+  const t=i/10,z=stairZ0+(stairZ1-stairZ0)*t,top=3.88-(3.88-.12)*t;
+  box(x,top+.52,z,.105,1.04,.105,trim);
+ }
+}
+slopedRail(-2.53);slopedRail(2.53);
+// Small entry posts distinguish the top and bottom landings.
+for(const z of [stairZ0,stairZ1])for(const x of [-2.53,2.53]){
+ const y=z===stairZ0?4.28:.55;
+ box(x,y,z,.25,1.1,.25,wood);
+ box(x,y+.59,z,.36,.14,.36,gold);
+}
+
+// Decorative ceiling beams and warm lanterns, using low-cost shared materials.
+for(let z=-25;z<=25;z+=10){box(0,10.5,z,54,.28,.3,wood);
+  for(let x of [-17,0,17]){let lamp=new THREE.PointLight(0xffd29a,32,19,2);lamp.position.set(x,9.6,z);scene.add(lamp);
+    box(x,9.9,z,.5,.4,.5,gold)}}
+// Curved architectural elements, stone colonnades and distinct genre carpet runners.
+const archMat=material(0x77638e);
+const pillarGeometry=new THREE.CylinderGeometry(.23,.3,3.0,10),capGeometry=new THREE.CylinderGeometry(.36,.36,.15,12);
+for(const level of [0,3.88])for(const z of [-21,-9,3,15])for(const x of [-25.8,25.8]){
+ const pillar=new THREE.Mesh(pillarGeometry,archMat);pillar.position.set(x,level+1.5,z);scene.add(pillar);
+ const cap=new THREE.Mesh(capGeometry,archTrim);cap.position.set(x,level+3.05,z);scene.add(cap);
+ const arch=new THREE.Mesh(new THREE.TorusGeometry(1.1,.09,6,20,Math.PI),archMat);arch.position.set(x,level+3.05,z);arch.rotation.y=Math.PI/2;scene.add(arch);
+}
+const rugColors=[0xa74682,0x248e9a,0xb34337,0x7845ac,0x315bc5,0xb78a35,0x36865d,0x86664e];
+for(let g=0;g<8;g++){const x=[-23,-18,-13,-8,8,13,18,23][g];for(const level of [0,1]){
+ const rug=new THREE.Mesh(new THREE.PlaneGeometry(1.45,45),new THREE.MeshStandardMaterial({color:rugColors[g],roughness:.96,side:THREE.DoubleSide}));rug.rotation.x=-Math.PI/2;rug.position.set(x,level?3.907:.055,0);scene.add(rug);
+}}
+// Every series has a distinct, stable color (not merely one color per genre).
+const seriesColor=series=>new THREE.Color().setHSL(((series*0.61803398875)%1),.67+(series%4)*.055,.47+(series%3)*.065);
+const shelves=[],shelfGroup=new THREE.Group();scene.add(shelfGroup);
+const baseShelf=new THREE.BoxGeometry(2.18,2.46,.085),shelfMesh=new THREE.InstancedMesh(baseShelf,shelfMat,SHELVES),dummy=new THREE.Object3D();shelfGroup.add(shelfMesh);
+// 200 shelves per floor, 10 columns x 20 rows. Wide longitudinal aisles;
+// center columns moved away from the stairwell to leave an unobstructed route.
+const shelfXs=[-23,-18,-13,-8,-4.4,4.4,8,13,18,23];
+for(let i=0;i<SHELVES;i++){
+  const floor=i>=200?1:0,local=i%200,row=Math.floor(local/10),col=local%10;
+  const x=shelfXs[col],z=-25+row*2.6,y=floor?5.18:1.29;
+  dummy.position.set(x,y,z-.27);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();
+  shelfMesh.setMatrixAt(i,dummy.matrix);shelves.push({x,y,z,floor,series:i,placed:0});
+}
+shelfMesh.instanceMatrix.needsUpdate=true;
+// Upgradeable shelf-number sight: labels are generated only for nearby shelves.
+// A small sprite pool avoids keeping 400 canvas textures resident on mobile.
+const numberSigns=new Map();let signTick=0;
+function shelfNumberMaterial(index){
+  const c=document.createElement('canvas');c.width=256;c.height=96;
+  const ctx=c.getContext('2d');ctx.fillStyle='#241a32';ctx.fillRect(0,0,256,96);
+  ctx.strokeStyle='#f1cb79';ctx.lineWidth=5;ctx.strokeRect(3,3,250,90);
+  ctx.fillStyle='#ffe5a2';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font='bold 47px system-ui';ctx.fillText(String(index+1),128,48);
+  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;
+  return new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false});
+}
+function refreshShelfNumbers(){
+  const level=Math.max(0,Math.min(2,Number(skill.shelfNumbers)||0));
+  const radius=level===1?11:23;
+  const visible=[];
+  if(level){for(let i=0;i<shelves.length;i++){
+    const sh=shelves[i];if(sh.floor!==floorNow())continue;
+    const d=Math.hypot(sh.x-camera.position.x,sh.z-camera.position.z);
+    if(d<=radius)visible.push([i,d]);
+  }}
+  visible.sort((a,b)=>a[1]-b[1]);
+  const wanted=new Set(visible.slice(0,level===1?24:75).map(a=>a[0]));
+  for(const [id,sprite] of numberSigns){if(!wanted.has(id)){
+    scene.remove(sprite);sprite.material.map.dispose();sprite.material.dispose();numberSigns.delete(id);
+  }}
+  for(const id of wanted){if(numberSigns.has(id))continue;
+    const sh=shelves[id],sprite=new THREE.Sprite(shelfNumberMaterial(id));
+    sprite.position.set(sh.x,sh.y+1.72,sh.z);sprite.scale.set(1.15,.44,1);
+    scene.add(sprite);numberSigns.set(id,sprite);
+  }
+}
+
+// Thin brass shelves and vertical trim give the archive more depth without heavy textures.
+const shelfTrim=new THREE.InstancedMesh(new THREE.BoxGeometry(2.25,.075,.73),trim,SHELVES*2);
+for(let i=0;i<SHELVES;i++){let s=shelves[i];for(let j=0;j<2;j++){
+  dummy.position.set(s.x,s.y+(j?1.16:-1.16),s.z);dummy.updateMatrix();shelfTrim.setMatrixAt(i*2+j,dummy.matrix)
+}}shelfTrim.instanceMatrix.needsUpdate=true;scene.add(shelfTrim);
+// Shelf frame, five horizontal shelves, and side posts: shared geometry + instancing.
+function addShelfDetail(geo,mat,count,position){const mesh=new THREE.InstancedMesh(geo,mat,count);for(let i=0;i<SHELVES;i++){const sh=shelves[i];for(let j=0;j<count/SHELVES;j++){const [dx,dy,dz]=position(j);dummy.position.set(sh.x+dx,sh.y+dy,sh.z+dz);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();mesh.setMatrixAt(i*(count/SHELVES)+j,dummy.matrix)}}mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
+const shelfOak=new THREE.MeshStandardMaterial({map:oakTexture,roughness:.75}),shelfEdge=material(0xffca71);
+addShelfDetail(new THREE.BoxGeometry(2.3,.09,.78),shelfOak,SHELVES*5,j=>[0,-1.16+j*.58,.19]);
+addShelfDetail(new THREE.BoxGeometry(.11,2.62,.82),shelfOak,SHELVES*2,j=>[j?-1.12:1.12,0,.17]);
+addShelfDetail(new THREE.BoxGeometry(2.33,.045,.83),shelfEdge,SHELVES*3,j=>[0,-1.15+j*1.16,.2]);
+addShelfDetail(new THREE.BoxGeometry(.11,.18,.86),gold,SHELVES*2,j=>[j?-1.13:1.13,1.27,.18]);
+// v0.9.21: curved hardwood mouldings and recessed case construction.
+// All additions are decorative InstancedMeshes, not targets or collision obstacles.
+// The backing has been moved rearward so books sit visibly inside the frame.
+const walnut=new THREE.MeshStandardMaterial({map:oakTexture,color:0x9b795f,roughness:.81});
+const agedBronze=new THREE.MeshStandardMaterial({color:0xd9ae65,metalness:.38,roughness:.46});
+const shadowWood=new THREE.MeshStandardMaterial({color:0x2b1b2b,roughness:.95});
+const shelfPillars=new THREE.InstancedMesh(new THREE.CylinderGeometry(.075,.082,2.55,8),walnut,SHELVES*2);
+const shelfInnerShadow=new THREE.InstancedMesh(new THREE.BoxGeometry(1.94,2.28,.025),shadowWood,SHELVES);
+const shelfLip=new THREE.InstancedMesh(new THREE.CylinderGeometry(.052,.052,2.12,8),walnut,SHELVES*5);
+const shelfGoldBead=new THREE.InstancedMesh(new THREE.CylinderGeometry(.015,.015,2.12,6),agedBronze,SHELVES*5);
+const shelfFeet=new THREE.InstancedMesh(new THREE.CylinderGeometry(.115,.15,.16,9),walnut,SHELVES*2);
+const shelfFinials=new THREE.InstancedMesh(new THREE.SphereGeometry(.105,9,7),agedBronze,SHELVES*2);
+const shelfCrown=new THREE.InstancedMesh(new THREE.CylinderGeometry(.085,.085,2.36,10),walnut,SHELVES);
+const shelfPlinth=new THREE.InstancedMesh(new THREE.BoxGeometry(2.35,.12,.84),walnut,SHELVES);
+for(let i=0;i<SHELVES;i++){
+ const sh=shelves[i];
+ const set=(mesh,index,x,y,z,rz=0)=>{
+   dummy.position.set(x,y,z);dummy.rotation.set(0,0,rz);dummy.scale.set(1,1,1);
+   dummy.updateMatrix();mesh.setMatrixAt(index,dummy.matrix);
+ };
+ set(shelfInnerShadow,i,sh.x,sh.y,sh.z-.20);
+ set(shelfCrown,i,sh.x,sh.y+1.37,sh.z+.46,Math.PI/2);
+ set(shelfPlinth,i,sh.x,sh.y-1.31,sh.z+.17);
+ for(let j=0;j<2;j++){
+   const x=sh.x+(j?1.075:-1.075);
+   set(shelfPillars,i*2+j,x,sh.y,sh.z+.54);
+   set(shelfFeet,i*2+j,x,sh.y-1.37,sh.z+.47);
+   set(shelfFinials,i*2+j,x,sh.y+1.41,sh.z+.48);
+ }
+ for(let j=0;j<5;j++){
+   const y=sh.y-1.13+j*.58;
+   set(shelfLip,i*5+j,sh.x,y,sh.z+.60,Math.PI/2);
+   set(shelfGoldBead,i*5+j,sh.x,y+.057,sh.z+.61,Math.PI/2);
+ }
+}
+for(const mesh of [shelfPillars,shelfInnerShadow,shelfLip,shelfGoldBead,shelfFeet,shelfFinials,shelfCrown,shelfPlinth]){
+ mesh.instanceMatrix.needsUpdate=true;mesh.frustumCulled=false;scene.add(mesh);
+}
+// Colored genre seals, placed above the cases, distinguish each aisle.
+const genreSealColors=[0xd85d99,0x4ad5d4,0xf16c54,0xaa76f4,0x5f91ff,0xf1c867,0x65c98d,0xc59a73];
+const sealGeometry=new THREE.TorusGeometry(.14,.035,7,14);
+const seals=new THREE.InstancedMesh(sealGeometry,agedBronze,SHELVES);
+for(let i=0;i<SHELVES;i++){
+ const sh=shelves[i];
+ dummy.position.set(sh.x,sh.y+1.39,sh.z+.68);
+ dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();
+ seals.setMatrixAt(i,dummy.matrix);
+ seals.setColorAt(i,new THREE.Color(genreSealColors[catalog[Math.min(i*8,TOTAL-1)].genre]));
+}
+seals.instanceMatrix.needsUpdate=true;seals.instanceColor.needsUpdate=true;scene.add(seals);
+
+// Gilded carved shelf-front medallions and bookcase crown mouldings.
+const crownPlaces=[],crestPlaces=[];
+for(const sh of shelves){crownPlaces.push([sh.x,sh.y+1.37,sh.z+.52]);crestPlaces.push([sh.x,sh.y+1.36,sh.z+.59])}
+// Decorative components are instanced so all 400 shelves cost two draw calls.
+function batchOrnaments(geo,mat,positions){const mesh=new THREE.InstancedMesh(geo,mat,positions.length);const obj=new THREE.Object3D();positions.forEach((p,i)=>{obj.position.set(...p);obj.updateMatrix();mesh.setMatrixAt(i,obj.matrix)});mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
+batchOrnaments(new THREE.BoxGeometry(2.36,.13,.19),gold,crownPlaces);
+batchOrnaments(new THREE.TorusGeometry(.13,.032,5,10),gold,crestPlaces);
+// Visible book-spine markers are batched, not 3072 independent meshes.
+const spineGeom=new THREE.BoxGeometry(.19,.54,.19),spineMesh=new THREE.InstancedMesh(spineGeom,bookMats[0],TOTAL),spineDummy=new THREE.Object3D();for(let i=0;i<TOTAL;i++){const s=shelves[Math.floor(i/8)],slot=i%8;spineDummy.position.set(s.x-.88+slot*.24,s.y+.22,s.z+.35);spineDummy.scale.set(1,1,1);spineDummy.updateMatrix();spineMesh.setMatrixAt(i,spineDummy.matrix);spineMesh.setColorAt(i,new THREE.Color(placed.has(i)?seriesColor(catalog[i].series):0x241c25))}spineMesh.instanceMatrix.needsUpdate=true;spineMesh.instanceColor.needsUpdate=true;scene.add(spineMesh);
+// Gold volume bands: a shared instanced mesh creates readable physical bindings.
+const bindingBands=new THREE.InstancedMesh(new THREE.BoxGeometry(.19,.027,.21),gold,TOTAL*2);
+for(let id=0;id<TOTAL;id++){const sh=shelves[Math.floor(id/8)],slot=id%8;for(let j=0;j<2;j++){
+ dummy.position.set(sh.x-.88+slot*.24,sh.y+.22+(j? .19:-.19),sh.z+.45);
+ dummy.scale.setScalar(placed.has(id)?1:.001);dummy.updateMatrix();bindingBands.setMatrixAt(id*2+j,dummy.matrix)
+}}bindingBands.instanceMatrix.needsUpdate=true;scene.add(bindingBands);
+function updateBindingBands(id){const sh=shelves[Math.floor(id/8)],slot=id%8;for(let j=0;j<2;j++){
+ dummy.position.set(sh.x-.88+slot*.24,sh.y+.22+(j?.19:-.19),sh.z+.45);dummy.scale.setScalar(placed.has(id)?1:.001);dummy.updateMatrix();bindingBands.setMatrixAt(id*2+j,dummy.matrix)
+}bindingBands.instanceMatrix.needsUpdate=true}
+// Keep every loose book at a deterministic, persistent world position. No moving 160-book window.
+// Instancing renders all 3,072 potential books in one draw call without pop-in.
+// A bound book has a paper page-block, colored cloth cover and illustrated front.
+// 8 procedural illustrated cover themes; per-series cloth tint distinguishes all 384 series.
+const coverTextures=genres.map((genre,g)=>{
+ const c=document.createElement('canvas');c.width=128;c.height=192;const ctx=c.getContext('2d');
+ const hues=[343,192,17,277,223,39,111,24];ctx.fillStyle=`hsl(${hues[g]},68%,29%)`;ctx.fillRect(0,0,128,192);
+ ctx.strokeStyle='#d7b575';ctx.lineWidth=5;ctx.strokeRect(9,9,110,174);ctx.lineWidth=1;ctx.strokeRect(15,15,98,162);
+ ctx.save();ctx.translate(64,82);ctx.strokeStyle='#f7d995';ctx.fillStyle='#dfbc78';ctx.lineWidth=3;
+ if(g===0){ctx.beginPath();ctx.moveTo(-24,-4);ctx.bezierCurveTo(-34,-36,-2,-38,0,-16);ctx.bezierCurveTo(4,-38,36,-32,24,-4);ctx.lineTo(0,23);ctx.closePath();ctx.fill()}
+ else if(g===1){ctx.beginPath();for(let a=0;a<8;a++){let t=a*Math.PI/4;ctx.lineTo(Math.cos(t)*(a%2?17:33),Math.sin(t)*(a%2?17:33))}ctx.closePath();ctx.stroke();ctx.beginPath();ctx.arc(0,0,9,0,7);ctx.stroke()}
+ else if(g===2){ctx.beginPath();ctx.moveTo(-18,30);ctx.lineTo(-4,-7);ctx.lineTo(-15,-6);ctx.lineTo(16,-36);ctx.lineTo(6,-4);ctx.lineTo(20,-4);ctx.closePath();ctx.fill()}
+ else if(g===3){ctx.beginPath();ctx.arc(0,-9,24,0,7);ctx.stroke();ctx.fillRect(-17,8,34,15);ctx.fillStyle='#281c31';ctx.fillRect(-12,-10,8,7);ctx.fillRect(4,-10,8,7)}
+ else if(g===4){for(let a=0;a<9;a++){let t=a*Math.PI*2/9;ctx.beginPath();ctx.arc(Math.cos(t)*27,Math.sin(t)*27,2,0,7);ctx.fill()}ctx.beginPath();ctx.arc(0,0,17,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(0,0,37,11,-.4,0,7);ctx.stroke()}
+ else if(g===5){ctx.beginPath();ctx.moveTo(-14,-28);ctx.lineTo(14,-28);ctx.moveTo(-5,-28);ctx.lineTo(-5,0);ctx.lineTo(-20,27);ctx.quadraticCurveTo(0,37,20,27);ctx.lineTo(5,0);ctx.lineTo(5,-28);ctx.stroke();ctx.fillRect(-13,15,26,9)}
+ else if(g===6){ctx.beginPath();ctx.moveTo(0,31);ctx.lineTo(0,-28);ctx.stroke();for(let k=0;k<5;k++){ctx.beginPath();ctx.ellipse(k%2?11:-11,18-k*10,12,5,k%2?-.5:.5,0,7);ctx.stroke()}}
+ else{ctx.beginPath();ctx.moveTo(-25,-25);ctx.lineTo(0,-18);ctx.lineTo(25,-25);ctx.lineTo(25,27);ctx.lineTo(0,21);ctx.lineTo(-25,27);ctx.closePath();ctx.stroke();ctx.beginPath();ctx.moveTo(0,-18);ctx.lineTo(0,21);ctx.stroke()}
+ ctx.restore();ctx.fillStyle='#f4dfb1';ctx.textAlign='center';ctx.font='bold 11px Georgia,serif';ctx.fillText(genre.toUpperCase().slice(0,17),64,149);ctx.font='9px Georgia,serif';ctx.fillText('ARCANE ARCHIVES',64,167);
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=2;return t;
+});
+// v0.9.21: a unified hardback book, with geometry-local parts sharing ONE world transform.
+// This prevents page blocks and bindings drifting apart as the book rotates.
+const coverGeometry=new THREE.BoxGeometry(.385,.025,.51);
+coverGeometry.translate(0,.075,0);
+const backCoverGeometry=new THREE.BoxGeometry(.385,.024,.51);
+backCoverGeometry.translate(0,-.075,0);
+const pageBlockGeometry=new THREE.BoxGeometry(.345,.118,.468);
+const spineGeometry=new THREE.CylinderGeometry(.071,.071,.49,10);
+spineGeometry.rotateX(Math.PI/2);spineGeometry.translate(-.177,0,0);
+const pageEdgeGeometry=new THREE.BoxGeometry(.012,.095,.43);
+pageEdgeGeometry.translate(.177,0,0);
+const coverMats=coverTextures.map(t=>new THREE.MeshStandardMaterial({map:t,roughness:.91,metalness:0,side:THREE.DoubleSide}));
+function bookShape(){
+ const sh=new THREE.Shape();
+ sh.moveTo(-.16,-.255);sh.lineTo(.16,-.255);
+ sh.quadraticCurveTo(.195,-.255,.195,-.22);sh.lineTo(.195,.22);
+ sh.quadraticCurveTo(.195,.255,.16,.255);sh.lineTo(-.16,.255);
+ sh.quadraticCurveTo(-.195,.255,-.195,.22);sh.lineTo(-.195,-.22);
+ sh.quadraticCurveTo(-.195,-.255,-.16,-.255);
+ const g=new THREE.ExtrudeGeometry(sh,{depth:.118,bevelEnabled:true,bevelThickness:.008,bevelSize:.008,bevelSegments:2,curveSegments:3});
+ g.rotateX(-Math.PI/2);g.translate(0,-.059,0);g.computeVertexNormals();return g;
+}
+const looseMesh=new THREE.InstancedMesh(bookShape(),material(0xd9c6a4),TOTAL),looseIds=[],loosePositions=[];
+const loosePages=new THREE.InstancedMesh(pageBlockGeometry,material(0xf4e5c7),TOTAL);
+const looseBindings=new THREE.InstancedMesh(spineGeometry,material(0xb88c55),TOTAL);
+const looseBackCovers=new THREE.InstancedMesh(backCoverGeometry,material(0x73549b),TOTAL);
+const loosePageEdges=new THREE.InstancedMesh(pageEdgeGeometry,material(0xffedcb),TOTAL);
+for(const mesh of [looseMesh,loosePages,looseBindings,looseBackCovers,loosePageEdges]){
+ mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);
+}
+const looseCovers=coverMats.map(m=>{const mesh=new THREE.InstancedMesh(coverGeometry,m,TOTAL);mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);return mesh});
+// v0.9.21: collision-aware book scattering. No two loose hardbacks share a footprint.
+// Fixed, seeded layout preserves book locations between refreshes without rewriting saves.
+const BOOK_CLEARANCE=.66,BOOK_CELL=.74;
+const bookFloorOK=(x,z)=>{
+ if(Math.abs(x)>25.35||Math.abs(z)>26.45)return false;
+ // Keep the central staircase and both landing approaches clear.
+ if(Math.abs(x)<3.05&&z>8.0&&z<24.2)return false;
+ // A bookshelf is about 2.35 wide and .85 deep including new trim.
+ for(const sx of shelfXs){
+   if(Math.abs(x-sx)<1.46){
+     const row=Math.round((z+25)/2.6);
+     if(row>=0&&row<20&&Math.abs(z-(-25+row*2.6))<.72)return false;
+   }
+ }
+ return true;
+};
+const bookOccupied=new Set();
+const bookCell=(x,z)=>Math.round(x/BOOK_CELL)+','+Math.round(z/BOOK_CELL);
+const bookNeighborFree=(x,z)=>{
+ const cx=Math.round(x/BOOK_CELL),cz=Math.round(z/BOOK_CELL);
+ for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)
+   if(bookOccupied.has((cx+dx)+','+(cz+dz)))return false;
+ return true;
+};
+// Stable spatial variation: clustered density, irregular gaps, and gentle offsets.
+// Offsets stay small enough to preserve collision-safe cell footprints.
+const scatterNoise=(a,b)=>{let n=(Math.imul(a+731,374761393)^Math.imul(b+911,668265263))>>>0;n=Math.imul(n^(n>>>13),1274126177)>>>0;return ((n^(n>>>16))>>>0)/4294967295};
+const scatterOffset=(p)=>{
+ const ix=Math.round(p.x/BOOK_CELL),iz=Math.round(p.z/BOOK_CELL);
+ const dx=(scatterNoise(ix,iz)-.5)*.14,dz=(scatterNoise(iz+41,ix+97)-.5)*.14;
+ const x=p.x+dx,z=p.z+dz;
+ return bookFloorOK(x,z)?{x,z}:p;
+};
+const allLoosePositions=[];
+const candidates=[];
+for(let iz=0;iz<72;iz++)for(let ix=0;ix<68;ix++){
+ const x=-25.05+ix*BOOK_CELL,z=-26.0+iz*BOOK_CELL;
+ if(bookFloorOK(x,z))candidates.push({x,z});
+}
+// Deterministic shuffle distributes books throughout the archive instead of rows.
+let bookSeed=0xA9C018;
+for(let i=candidates.length-1;i>0;i--){
+ bookSeed=(Math.imul(bookSeed,1664525)+1013904223)>>>0;
+ const j=bookSeed%(i+1);
+ [candidates[i],candidates[j]]=[candidates[j],candidates[i]];
+}
+// Favor pockets of disorder, leaving scattered clear lanes and breathing room.
+// The second pass still places all remaining books if necessary.
+candidates.sort((a,b)=>{
+ const density=p=>Math.sin(p.x*.47+Math.sin(p.z*.13)*2.1)*Math.cos(p.z*.38-p.x*.12)+.48*Math.sin(p.z*.19+p.x*.24);
+ return density(b)-density(a);
+});
+for(const p of candidates){
+ if(!bookNeighborFree(p.x,p.z))continue;
+ bookOccupied.add(bookCell(p.x,p.z));allLoosePositions.push(scatterOffset(p));
+ if(allLoosePositions.length===TOTAL)break;
+}
+// If aisle capacity is tight, relax spacing only between books in separate cells.
+if(allLoosePositions.length<TOTAL){
+ for(const p of candidates){
+   if(bookOccupied.has(bookCell(p.x,p.z)))continue;
+   bookOccupied.add(bookCell(p.x,p.z));allLoosePositions.push(scatterOffset(p));
+   if(allLoosePositions.length===TOTAL)break;
+ }
+}
+if(allLoosePositions.length<TOTAL)throw new Error('Book placement area insufficient: '+allLoosePositions.length+'/'+TOTAL);
+// Keep dropped books away from other books and shelf geometry as well.
+function findSafeDrop(x,z,excludedId){
+ const used=new Set();
+ for(let id=0;id<TOTAL;id++){
+   if(id===excludedId||placed.has(id)||inventory.includes(id))continue;
+   const p=dropped[id]||allLoosePositions[id];
+   used.add(bookCell(p.x,p.z));
+ }
+ for(let ring=0;ring<30;ring++){
+  const steps=Math.max(8,ring*10);
+  for(let k=0;k<steps;k++){
+   const angle=2*Math.PI*k/steps;
+   const px=x+Math.cos(angle)*ring*BOOK_CELL,pz=z+Math.sin(angle)*ring*BOOK_CELL;
+   if(!bookFloorOK(px,pz))continue;
+   const cx=Math.round(px/BOOK_CELL),cz=Math.round(pz/BOOK_CELL);
+   let free=true;
+   for(let dx=-1;dx<=1&&free;dx++)for(let dz=-1;dz<=1;dz++)
+     if(used.has((cx+dx)+','+(cz+dz))){free=false;break}
+   if(free)return {x:px,z:pz};
+  }
+ }
+ return null;
+}
+// Re-home previously dropped books if their saved coordinates overlap furniture or each other.
+const sanitizedDrops={};
+for(const [key,p] of Object.entries(dropped)){
+ const id=Number(key);
+ if(!Number.isInteger(id)||id<0||id>=TOTAL||!p||!Number.isFinite(p.x)||!Number.isFinite(p.z))continue;
+ if(!bookFloorOK(p.x,p.z))continue; // fall back to its original scatter position
+ sanitizedDrops[id]=p;
+}
+dropped=sanitizedDrops;
+function refreshLoose(){
+ looseIds.length=0;loosePositions.length=0;
+ for(let id=0;id<TOTAL;id++){
+   const visible=!placed.has(id)&&!inventory.includes(id);
+   const p=dropped[id]||allLoosePositions[id];
+   if(visible){looseIds.push(id);loosePositions.push(p)}
+   // Floor is y=0; all components share rotation and origin, avoiding floating fragments.
+   dummy.position.set(p.x,.091,p.z);
+   // Natural-looking scattered angles, not 11 repeating orientations.
+   const turn=scatterNoise(id,193)*Math.PI*2;
+   dummy.rotation.set(0,turn,0);
+   dummy.scale.setScalar(visible?1:0);
+   dummy.updateMatrix();
+   for(const mesh of [looseMesh,loosePages,looseBindings,looseBackCovers,loosePageEdges])mesh.setMatrixAt(id,dummy.matrix);
+   const tint=seriesColor(catalog[id].series);
+   looseMesh.setColorAt(id,tint);
+   looseBindings.setColorAt(id,tint.clone().multiplyScalar(.72));
+   looseBackCovers.setColorAt(id,tint);
+   for(let g=0;g<8;g++){
+     dummy.scale.setScalar(visible&&catalog[id].genre===g?1:0);
+     dummy.updateMatrix();looseCovers[g].setMatrixAt(id,dummy.matrix);
+     if(g===catalog[id].genre)looseCovers[g].setColorAt(id,tint.clone().lerp(new THREE.Color(0xffffff),.22));
+   }
+ }
+ for(const mesh of [looseMesh,loosePages,looseBindings,looseBackCovers,loosePageEdges]){
+   mesh.instanceMatrix.needsUpdate=true;
+   if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
+ }
+ for(const cover of looseCovers){
+   cover.instanceMatrix.needsUpdate=true;
+   if(cover.instanceColor)cover.instanceColor.needsUpdate=true;
+ }
+}
+function syncLoose(){} // World objects stay put while walking.
+// Lightweight magical flight effects, capped to protect mobile frame rates.
+const bookFlights=[];
+const flightBookGeometry=new THREE.BoxGeometry(.39,.13,.51);
+const flightPageGeometry=new THREE.BoxGeometry(.35,.055,.47);
+const flightGlowGeometry=new THREE.SphereGeometry(.38,10,7);
+const flightPageMaterial=new THREE.MeshBasicMaterial({color:0xffe8b4});
+const flightGlowMaterial=new THREE.MeshBasicMaterial({color:0x9c72ff,transparent:true,opacity:.2,depthWrite:false,blending:THREE.AdditiveBlending});
+const flightSparkGeometry=new THREE.SphereGeometry(.055,6,5);
+const flightSparkMaterial=new THREE.MeshBasicMaterial({color:0xffdf8a,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending});
+function flyBook(id,kind,from){
+ if(bookFlights.length>=14)return;
+ const cover=seriesColor(catalog[id].series);
+ const group=new THREE.Group();
+ const coverMesh=new THREE.Mesh(flightBookGeometry,new THREE.MeshStandardMaterial({color:cover,emissive:cover,emissiveIntensity:.35,roughness:.55}));
+ const pages=new THREE.Mesh(flightPageGeometry,flightPageMaterial);pages.position.y=.025;
+ const glow=new THREE.Mesh(flightGlowGeometry,flightGlowMaterial.clone());
+ const sparks=[];
+ for(let i=0;i<4;i++){const sp=new THREE.Mesh(flightSparkGeometry,flightSparkMaterial);group.add(sp);sparks.push(sp)}
+ group.add(glow,coverMesh,pages);scene.add(group);
+ const origin=new THREE.Vector3(from.x,from.y,from.z);
+ const destination=new THREE.Vector3();
+ if(kind==='shelf'){
+  const sh=shelves[catalog[id].series],slot=id%8;
+  destination.set(sh.x-.88+slot*.24,sh.y+.25,sh.z+.35);
+ }else{
+  camera.getWorldDirection(destination);destination.multiplyScalar(1.05).add(camera.position);destination.y-=.25;
+ }
+ bookFlights.push({group,glow,sparks,origin,destination,kind,age:0,duration:kind==='shelf'?.83:.65});
+}
+function animateBookFlights(dt){
+ for(let i=bookFlights.length-1;i>=0;i--){
+  const f=bookFlights[i];f.age+=dt;const t=Math.min(1,f.age/f.duration),ease=t*t*(3-2*t);
+  if(f.kind==='pickup'){
+   camera.getWorldDirection(f.destination);f.destination.multiplyScalar(1.05).add(camera.position);f.destination.y-=.25;
+  }
+  f.group.position.lerpVectors(f.origin,f.destination,ease);
+  f.group.position.y+=Math.sin(t*Math.PI)*.55;
+  f.group.rotation.set(.12+Math.sin(t*9)*.15,t*6.283,.15);
+  f.glow.scale.setScalar(1.2+Math.sin(t*Math.PI)*1.3);
+  f.glow.material.opacity=.12+.28*Math.sin(t*Math.PI);
+  for(let j=0;j<f.sparks.length;j++){
+   const angle=t*12+j*Math.PI/2,r=.3+.14*Math.sin(t*14+j);
+   f.sparks[j].position.set(Math.cos(angle)*r,Math.sin(t*9+j)*.24,Math.sin(angle)*r);
+  }
+  if(t>=1){scene.remove(f.group);f.group.children.forEach(m=>{if(m.material!==flightPageMaterial&&m.material!==flightSparkMaterial)m.material?.dispose()});bookFlights.splice(i,1)}
+ }
+}
+
+const labels=new Map();function sign(text){let c=document.createElement('canvas');c.width=512;c.height=128;let a=c.getContext('2d');a.fillStyle='#261c35';a.fillRect(0,0,512,128);a.strokeStyle='#d7b577';a.lineWidth=7;a.strokeRect(3,3,506,122);a.fillStyle='#ffe2a5';a.font='bold 38px system-ui';a.textAlign='center';a.fillText(text,256,79);return new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true})}
+for(let g=0;g<8;g++){let sprite=new THREE.Sprite(sign(genres[g]));sprite.position.set(-24+g*6.5,3.2,-27);sprite.scale.set(3.5,.85,1);scene.add(sprite)}
+// v0.9.21 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
+// Shared geometries and instancing keep the extra GPU cost low on mobile Safari.
+const decorGold=new THREE.MeshStandardMaterial({color:0xb78d52,metalness:.56,roughness:.37});
+const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
+const decorStone=new THREE.MeshStandardMaterial({color:0x524458,roughness:.91});
+const runeGlow=new THREE.MeshBasicMaterial({color:0x8c78d4,transparent:true,opacity:.67,depthWrite:false});
+function instancedDecor(geo,mat,positions){const mesh=new THREE.InstancedMesh(geo,mat,positions.length);const d=new THREE.Object3D();positions.forEach(([x,y,z,sx=1,sy=1,sz=1],i)=>{d.position.set(x,y,z);d.scale.set(sx,sy,sz);d.updateMatrix();mesh.setMatrixAt(i,d.matrix)});mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
+// Recessed wall columns and illuminated capital plates: outside the navigable aisles.
+const pilasters=[];const capitals=[];
+for(let z=-25;z<=25;z+=5){for(const x of [-27.72,27.72]){pilasters.push([x,5.2,z]);capitals.push([x,9.65,z])}}
+instancedDecor(new THREE.BoxGeometry(.38,9.3,.48),decorStone,pilasters);
+instancedDecor(new THREE.BoxGeometry(.58,.22,.72),decorGold,capitals);
+// Ceiling coffers and ribs suggest an old vaulted archive, without expensive shadows.
+const coffers=[];const ribEnds=[];
+for(let z=-25;z<=25;z+=5){for(let x=-22;x<=22;x+=5.5){coffers.push([x,10.52,z]);ribEnds.push([x,10.37,z])}}
+instancedDecor(new THREE.BoxGeometry(4.8,.045,4.25),decorDark,coffers);
+instancedDecor(new THREE.BoxGeometry(4.9,.06,.08),decorGold,ribEnds);
+// Ornate shelf corner rivets and gilded vertical spine separators, all batched.
+const rivets=[];const insetRails=[];
+for(let i=0;i<SHELVES;i++){const sh=shelves[i];for(const side of [-1,1]){rivets.push([sh.x+side*1.1,sh.y+1.27,sh.z+.62]);insetRails.push([sh.x+side*1.06,sh.y,sh.z+.61])}}
+instancedDecor(new THREE.SphereGeometry(.055,6,4),decorGold,rivets);
+instancedDecor(new THREE.BoxGeometry(.027,2.18,.028),decorGold,insetRails);
+// Eight heraldic banners: canvas art stays legible and requires no downloaded assets.
+const genreSigils=['♥','✦','ϟ','☾','✧','⚗','❧','⌛'];
+const bannerColors=['#743a58','#31656a','#8a422c','#53346e','#344c7b','#82672f','#41603e','#72513e'];
+for(let g=0;g<8;g++){
+ const canvas=document.createElement('canvas');canvas.width=192;canvas.height=320;
+ const ctx=canvas.getContext('2d');ctx.fillStyle=bannerColors[g];ctx.fillRect(0,0,192,320);
+ ctx.strokeStyle='#d9b76d';ctx.lineWidth=9;ctx.strokeRect(10,10,172,300);ctx.lineWidth=2;ctx.strokeRect(22,22,148,276);
+ ctx.fillStyle='#f9e5b2';ctx.textAlign='center';ctx.font='bold 104px Georgia,serif';ctx.fillText(genreSigils[g],96,170);
+ ctx.font='bold 16px Georgia,serif';ctx.fillText(genres[g].toUpperCase().slice(0,17),96,252);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const mat=new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.55,2.5),mat);
+ mesh.position.set(-22.8+g*6.5,7.4,-29.77);scene.add(mesh);
+ const tassel=box(mesh.position.x,6.12,-29.72,1.66,.08,.1,decorGold);
+}
+// Arcane floor inlays at the entry, deliberately flat and non-colliding.
+const inlayPositions=[];
+for(let i=0;i<24;i++){const a=i*Math.PI/12;inlayPositions.push([Math.cos(a)*2.3,.044,26+Math.sin(a)*2.3]);}
+instancedDecor(new THREE.BoxGeometry(.23,.008,.06),decorGold,inlayPositions);
+// A small number of distant magical motes, drawn in one instanced batch.
+const motePositions=[];
+for(let i=0;i<96;i++){const k=(i*7919)%997;motePositions.push([-25+(k%101)/100*50,1.3+((i*37)%71)/10,-26+((i*61)%101)/100*52])}
+const archiveMotes=instancedDecor(new THREE.SphereGeometry(.033,5,4),runeGlow,motePositions);
+archiveMotes.frustumCulled=false;
+const keyObjs=[];for(let k=0;k<6;k++){let x=-21+(k%3)*21,z=-18+Math.floor(k/3)*36,mesh=box(x,.28,z,.32,.18,.15,gold);mesh.rotation.z=.4;mesh.visible=!keys.has(k);keyObjs.push({mesh,x,z,k})}
+const chestObjs=[];for(let k=0;k<2;k++){let x=k?20:-20,z=-22,mesh=box(x,4.18,z,1,.75,.7,gold);mesh.visible=!chests.has(k);chestObjs.push({mesh,x,z,k})}
+// The detailed oak staircase above is the only visible stair geometry.
+let yaw=0,pitch=0,joyId=null,lookId=null,jx=0,jy=0,lookX=0,lookY=0;const joy=$('joy'),knob=$('knob');function resetJoy(){joyId=null;jx=jy=0;knob.style.transform='translate(0,0)';joy.style.opacity='.35'}function joyMove(e){let r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.29,len=Math.hypot(dx,dy);if(len>max){dx*=max/len;dy*=max/len}jx=dx/max;jy=dy/max;knob.style.transform=`translate(${dx}px,${dy}px)`}
+joy.addEventListener('pointerdown',e=>{if(joyId!==null)return;joyId=e.pointerId;joy.setPointerCapture(e.pointerId);joy.style.opacity='.9';joyMove(e)});joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyMove(e)});for(let t of ['pointerup','pointercancel','lostpointercapture'])joy.addEventListener(t,e=>{if(e.pointerId===joyId)resetJoy()});
+renderer.domElement.addEventListener('pointerdown',e=>{if($('panel').style.display==='block')return;if(e.clientX<innerWidth*.42&&e.clientY>innerHeight*.4&&joyId===null){joyId=e.pointerId;renderer.domElement.setPointerCapture(e.pointerId);joyMove(e)}else if(lookId===null){lookId=e.pointerId;lookX=e.clientX;lookY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)}});renderer.domElement.addEventListener('pointermove',e=>{if(e.pointerId===joyId){joyMove(e);return}if(e.pointerId!==lookId)return;yaw-=(e.clientX-lookX)*.004;pitch=Math.max(-1.25,Math.min(1.25,pitch-(e.clientY-lookY)*.0035));lookX=e.clientX;lookY=e.clientY});for(let t of ['pointerup','pointercancel','lostpointercapture'])renderer.domElement.addEventListener(t,e=>{if(e.pointerId===joyId)resetJoy();if(e.pointerId===lookId)lookId=null});const keysDown={};addEventListener('keydown',e=>{keysDown[e.code]=true;if(e.code==='KeyE')interact()});addEventListener('keyup',e=>keysDown[e.code]=false);
+
+// Arcane Archives Mystical Fantasy Audio — Web Audio, no external sound files.
+const audioPrefs=(()=>{try{return {...{music:28,effects:70,ambience:35,mute:false},...JSON.parse(localStorage.getItem('arcane_audio_v1')||'{}')}}catch{return {music:28,effects:70,ambience:35,mute:false}}})();
+let audioCtx=null,audioBuses={},musicAt=0,musicIndex=0,footAt=0,magnetAt=0,ambienceLoop=null;
+function audioAmbientStart(){if(!audioCtx||ambienceLoop)return;const buffer=audioCtx.createBuffer(1,audioCtx.sampleRate*2,audioCtx.sampleRate),samples=buffer.getChannelData(0);for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;const src=audioCtx.createBufferSource(),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();src.buffer=buffer;src.loop=true;filter.type='lowpass';filter.frequency.value=750;gain.gain.value=.12;src.connect(filter);filter.connect(gain);gain.connect(audioBuses.ambience);src.start();ambienceLoop=src}
+function audioStart(){try{if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();for(const k of ['music','effects','ambience']){audioBuses[k]=audioCtx.createGain();audioBuses[k].connect(audioCtx.destination)}audioAmbientStart()}if(audioCtx.state!=='running')audioCtx.resume().then(()=>{audioApply();audioStatus()}).catch(e=>console.warn('Resume failed',e));audioApply()}catch(e){console.warn('Audio unavailable:',e)}}
+function audioStatus(){const el=document.getElementById('audioStatus');if(el)el.textContent=audioCtx?.state==='running'?'Audio active ✓':'Audio blocked — tap ENABLE AUDIO'}
+function audioApply(category){if(!audioCtx)return;for(const k of category?[category]:['music','effects','ambience'])audioBuses[k].gain.setTargetAtTime(audioPrefs.mute?0:audioPrefs[k]/100,audioCtx.currentTime,.04)}
+function audioNote(hz,duration=.3,wave='sine',bus='effects',gain=.2,delay=0){if(!audioCtx||audioCtx.state!=='running'||audioPrefs.mute)return;const t=audioCtx.currentTime+delay,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=wave;o.frequency.setValueAtTime(hz,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(audioBuses[bus]);o.start(t);o.stop(t+duration+.03)}
+function audioCue(k,n=0){if(k==='pickup'){audioNote(659,.24);audioNote(988,.42,'sine','effects',.13,.07)}else if(k==='shelf'){audioNote(185,.13,'triangle','effects',.14);audioNote(392+n*33,.34,'sine','effects',.2,.08)}else if(k==='complete'){[523,659,784,1047].forEach((f,i)=>audioNote(f,.65,'sine','effects',.19,i*.15))}else if(k==='upgrade'){[392,587,784].forEach((f,i)=>audioNote(f,.43,'triangle','effects',.17,i*.11))}else if(k==='magnet'){audioNote(440,.34,'sine','effects',.07);audioNote(880,.31,'sine','effects',.06,.09)}else if(k==='step'){audioNote(94,.085,'triangle','effects',.055)}else if(k==='key'){audioNote(740,.35);audioNote(1110,.55,'sine','effects',.14,.1)}}
+const fantasyNotes=[261.63,329.63,392,493.88,392,329.63,293.66,392,261.63,349.23,440,523.25,440,349.23,329.63,293.66];
+function audioFrame(t,moving,magnet){if(!audioCtx||audioCtx.state!=='running'||audioPrefs.mute)return;if(t-musicAt>1.25){musicAt=t;let f=fantasyNotes[musicIndex++%fantasyNotes.length];audioNote(f,2,'sine','music',.14);audioNote(f/2,2.5,'triangle','music',.075)}if(moving&&t-footAt>.46){footAt=t;audioCue('step')}if(magnet&&t-magnetAt>2){magnetAt=t;audioCue('magnet')}}
+const audioSettings=document.createElement('div');audioSettings.id='audioSettings';audioSettings.style.cssText='display:none;position:fixed;z-index:30;inset:12% 8% auto;max-width:440px;margin:auto;background:#211831;color:#fff1d0;border:1px solid #caa467;border-radius:14px;padding:17px;box-shadow:0 0 0 100vmax #000a;font:14px system-ui';
+audioSettings.innerHTML='<h2>✧ Mystical Fantasy Audio</h2><label><input type="checkbox" id="audioMute"> Mute all</label>'+['music','effects','ambience'].map(k=>'<p><label>'+k.toUpperCase()+' <output id="audioVal_'+k+'"></output>%<input style="display:block;width:100%;margin-top:8px" type="range" min="0" max="100" id="audio_'+k+'"></label></p>').join('')+'<p id="audioStatus">Tap ENABLE AUDIO to start sound</p><button id="audioEnable">▶ ENABLE AUDIO / TEST SOUND</button><button id="audioClose">Done</button>';document.body.appendChild(audioSettings);
+const audioButton=document.createElement('button');audioButton.textContent='🔊 ENABLE AUDIO';audioButton.style.cssText='position:fixed;z-index:25;right:9px;top:calc(82px + env(safe-area-inset-top));padding:7px 10px';document.body.appendChild(audioButton);
+audioButton.onclick=()=>{audioStart();audioSettings.style.display='block';audioStatus();for(const k of ['music','effects','ambience']){document.getElementById('audio_'+k).value=audioPrefs[k];document.getElementById('audioVal_'+k).textContent=audioPrefs[k]}document.getElementById('audioMute').checked=audioPrefs.mute};
+document.getElementById('audioClose').onclick=()=>audioSettings.style.display='none';
+document.getElementById('audioEnable').onclick=async()=>{audioStart();try{await audioCtx?.resume()}catch(e){console.warn(e)}audioApply();audioStatus();audioCue('complete')};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&audioCtx)audioCtx.resume().then(audioStatus).catch(()=>{})});
+function audioSave(category){try{localStorage.setItem('arcane_audio_v1',JSON.stringify(audioPrefs))}catch{}audioApply(category)}
+for(const k of ['music','effects','ambience'])document.getElementById('audio_'+k).oninput=e=>{audioPrefs[k]=+e.target.value;document.getElementById('audioVal_'+k).textContent=audioPrefs[k];audioSave(k)};
+document.getElementById('audioMute').onchange=e=>{audioPrefs.mute=e.target.checked;audioSave()};
+document.addEventListener('pointerdown',audioStart);document.addEventListener('keydown',audioStart);
+
+function toast(msg){$('toast').textContent=msg;$('toast').style.opacity=1;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').style.opacity=0,2600)}const seriesNames={
+Romance:['The Hollow Crown','Letters to the Moon','The Thornbound Heart','The Rose and the Raven'],
+Monsterology:['Beasts of the Old World','The Wyvern Keeper','A Field Guide to Nightmares','The Basilisk Codex'],
+'Destructive Magic':['Ashes of the First Flame','The Shattered Sigil','Storms Unbound','The Ember War'],
+Necromancy:['Whispers Beyond the Veil','The Bone Orchard','The Last Grimoire','The Gravekeeper’s Oath'],
+Astronomy:['The Celestial Atlas','Songs of the Comets','The Ninth Constellation','Stars Beyond the Gate'],
+Alchemy:['The Gilded Crucible','Mercury and Moonstone','The Philosopher’s Lantern','Elixirs of the Deep'],
+Botany:['The Moonlit Herbarium','Roots of the Elderwood','The Poison Garden','Flowers of the Fae'],
+Chronicles:['The Lost Kingdoms','Annals of the Silver Age','The Archivist’s Secret','The Forgotten Dynasty']};
+const volumeNames=['The Beginning','A Hidden Sign','The Gathering','The Broken Seal','The Reckoning','The Long Night','The Final Trial','The Restoration'];
+function title(id){const b=catalog[id],g=genres[b.genre],arr=seriesNames[g];return arr[Math.floor(b.series/8)%arr.length]+(Math.floor(b.series/32)?' · Chronicle '+(Math.floor(b.series/32)+1):'')}
+function name(id){let b=catalog[id];return `${title(id)} — Vol. ${b.vol}: ${volumeNames[b.vol-1]}`}
+function details(id){let b=catalog[id];return `${name(id)} · ${genres[b.genre]} · Shelf ${b.series+1}`}
+// True center-screen raycast: visible geometry wins, not nearest horizontal proximity.
+const aimRay=new THREE.Raycaster(),aimCenter=new THREE.Vector2(0,0);
+const aimSurfaces=[shelfMesh,looseMesh,...keyObjs.map(k=>k.mesh),...chestObjs.map(c=>c.mesh)];
+// Solid architecture blocks interaction rays, including floors and stairs.
+const occluders=scene.children.filter(o=>o.isMesh&&!aimSurfaces.includes(o)&&o!==spineMesh&&o!==shelfTrim&&o.geometry?.type==='BoxGeometry'&&(
+  o.geometry.parameters.width>4 || o.geometry.parameters.height>3 || o.geometry.parameters.depth>4
+));
+let highlightedShelf=-1,highlightedBook=-1;
+function setAimHighlight(t){
+ const shelf=t?.type==='shelf'?t.id:-1,book=t?.type==='book'?t.id:-1;
+ if(shelf!==highlightedShelf){
+   if(highlightedShelf>=0)shelfMesh.setColorAt(highlightedShelf,new THREE.Color(0xffffff));
+   if(shelf>=0)shelfMesh.setColorAt(shelf,new THREE.Color(0xffdca0));
+   shelfMesh.instanceColor.needsUpdate=true;highlightedShelf=shelf;
+ }
+ if(book!==highlightedBook){
+   if(highlightedBook>=0)looseMesh.setColorAt(highlightedBook,seriesColor(catalog[highlightedBook].series));
+   if(book>=0)looseMesh.setColorAt(book,new THREE.Color(0xfff1ae));
+   looseMesh.instanceColor.needsUpdate=true;highlightedBook=book;
+ }
+}
+function target(){
+ camera.updateMatrixWorld();aimRay.setFromCamera(aimCenter,camera);aimRay.far=4.5;
+ const hits=aimRay.intersectObjects([...aimSurfaces,...occluders],false);
+ for(const hit of hits){
+   const obj=hit.object;
+   if(obj===shelfMesh){const id=hit.instanceId;if(id===undefined||shelves[id].floor!==floorNow())return null;return {type:'shelf',id,obj:shelves[id]}}
+   if(obj===looseMesh){const id=hit.instanceId;if(id===undefined||placed.has(id)||inventory.includes(id))continue;return {type:'book',id,obj:dropped[id]||allLoosePositions[id]}}
+   const key=keyObjs.find(k=>k.mesh===obj&&!keys.has(k.k));if(key)return {type:'key',id:key.k,obj:key};
+   const chest=chestObjs.find(c=>c.mesh===obj&&!chests.has(c.k));if(chest)return {type:'chest',id:chest.k,obj:chest};
+   // A wall, stair, floor or other solid object is in front of the target.
+   return null;
+ }
+ return null;
+}
+let lanternOn=false,oracleSeries=null,oracleUntil=0,spectralUntil=0,spectralNext=0,spectralCooldown=0,teleportCooldown=0,magnetTick=0,magnetCycleActive=inventory.length===0;
+const abilityClock=()=>performance.now()/1000;
+function swiftRank(){return Math.min(3,Math.max(0,Number(xpPerks.swift)||0))}
+function satchelRank(){return Math.min(8,Math.max(0,Number(xpPerks.satchel)||0)||(xpPerks.satchel===true?1:0))}
+function magnetRank(){return Math.min(3,Math.max(0,Number(xpPerks.magnet)||0)||(xpPerks.magnet===true?1:0))}
+function magnetRadius(){return 1.5*magnetRank()}
+function satchelLimit(){return 10+5*satchelRank()}
+function tierCost(k){const r=k==='satchel'?satchelRank():k==='magnet'?magnetRank():swiftRank();return k==='satchel'?100+50*r:k==='magnet'?[125,200,300][Math.min(r,2)]:75+50*r}
+function xpAvailable(){return Math.max(0,xp-xpSpent)}
+function levelNow(){return 1+Math.floor(xp/100)}
+function floorNow(){return camera.position.y>3?1:0}function updateHUD(){let count=placed.size;$('progress').textContent=`${count} / ${TOTAL}`;$('rows').textContent=Array.from({length:SERIES},(_,i)=>i).filter(i=>{for(let j=0;j<8;j++)if(!placed.has(i*8+j))return false;return true}).length;$('carry').textContent=`Satchel: ${inventory.length} / ${satchelLimit()}`;$('xp').textContent=`${xpAvailable()} / ${xp} · Lv${levelNow()}`;$('points').textContent=points;$('objective').textContent=count===TOTAL?'The archive is restored!':'Restore the series · Spend XP in MAGIC';if(waypoint!==null&&xpPerks.compass){const sh=shelves[waypoint],dist=Math.hypot(sh.x-camera.position.x,sh.z-camera.position.z),a=Math.atan2(sh.x-camera.position.x,-(sh.z-camera.position.z))-yaw;const direction=['↑','↗','→','↘','↓','↙','←','↖'][((Math.round(((a%(Math.PI*2))+(Math.PI*2))%(Math.PI*2)/(Math.PI/4)))%8)];$('objective').textContent=`🧭 ${direction} Shelf ${waypoint+1} · ${dist.toFixed(1)}m · Floor ${sh.floor+1}`;}let t=target();setAimHighlight(t);$('hint').textContent=t?.type==='book'?`📕 ${details(t.id)}`:t?.type==='shelf'?`📚 Shelf #${t.id+1} · ${t.id<SERIES?`${title(t.id*8)} · ${genres[catalog[t.id*8].genre]} · ${Array.from({length:8},(_,v)=>placed.has(t.id*8+v)?1:0).reduce((a,b)=>a+b,0)}/8 books`:'Reserve shelf · 0/0 books'}`:t?.type==='key'?'✨ Hidden key':t?.type==='chest'?`🎁 Chest ${t.id+1}: ${t.id===0?'Sprint (3 keys)':'Mega-jump (6 keys)'}`:'Aim directly at a book or shelf';$('act').textContent=t?.type==='book'?'PICK UP':t?.type==='shelf'?'PLACE BOOK':t?.type==='key'?'TAKE KEY':t?.type==='chest'?'OPEN CHEST':'INTERACT'}
+// v0.9.21 — detailed humanoid fairy, sculpted silhouette and expressive face.
+// All character geometry is local to the existing camera-space encounter.
+const fairyRoot=new THREE.Group();camera.add(fairyRoot);scene.add(camera);fairyRoot.visible=false;
+const fairySkin=new THREE.MeshStandardMaterial({color:0xf5bfa8,roughness:.78});
+const fairyDress=new THREE.MeshStandardMaterial({color:0x9652d4,roughness:.55,metalness:.08,emissive:0x301050,emissiveIntensity:.18});
+const fairyHair=new THREE.MeshStandardMaterial({color:0x9a5631,roughness:.78});
+const fairyHairLight=new THREE.MeshStandardMaterial({color:0xd28a4b,roughness:.74});
+const fairyGold=new THREE.MeshStandardMaterial({color:0xffd38c,metalness:.55,roughness:.35});
+const fairyWhite=new THREE.MeshBasicMaterial({color:0xfff9ed});
+const fairyIris=new THREE.MeshBasicMaterial({color:0x3eac9c});
+const fairyPupil=new THREE.MeshBasicMaterial({color:0x151427});
+const fairyLip=new THREE.MeshBasicMaterial({color:0xa95062});
+const fairyWingMat=new THREE.MeshBasicMaterial({color:0x9bf7f0,transparent:true,opacity:.57,depthWrite:false,side:THREE.DoubleSide});
+function fairyPart(geometry,mat,x,y,z,parent=fairyRoot){const m=new THREE.Mesh(geometry,mat);m.position.set(x,y,z);parent.add(m);return m}
+function fairyEllipsoid(mat,x,y,z,sx,sy,sz,parent=fairyRoot){const m=fairyPart(new THREE.SphereGeometry(1,16,12),mat,x,y,z,parent);m.scale.set(sx,sy,sz);return m}
+function fairyLimb(a,b,r1,r2,mat,parent=fairyRoot){
+ const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),delta=end.clone().sub(start);
+ const m=fairyPart(new THREE.CylinderGeometry(r2,r1,delta.length(),9),mat,...start.clone().add(end).multiplyScalar(.5).toArray(),parent);
+ m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return m;
+}
+const fairyBody=new THREE.Group();fairyRoot.add(fairyBody);
+fairyEllipsoid(fairySkin,0,.225,.005,.124,.155,.104,fairyBody);
+fairyEllipsoid(fairySkin,0,.205,.096,.108,.104,.035,fairyBody); // cheeks and muzzle
+fairyEllipsoid(fairyHair,0,.317,-.028,.137,.093,.113,fairyBody); // hair crown
+for(const side of [-1,1]){
+ fairyEllipsoid(fairyHair,side*.116,.236,-.009,.045,.145,.063,fairyBody).rotation.z=side*.19;
+ for(let j=0;j<3;j++){
+  const lock=fairyEllipsoid(j%2?fairyHairLight:fairyHair,side*(.11+j*.012),.15-j*.052,-.034,.022,.084,.028,fairyBody);
+  lock.rotation.z=side*(.23+j*.13);
+ }
+ // almond-shaped eyes, colored irises, pupils and catchlights
+ fairyEllipsoid(fairyWhite,side*.054,.242,.102,.038,.028,.012,fairyBody);
+ fairyEllipsoid(fairyIris,side*.054,.24,.115,.020,.023,.008,fairyBody);
+ fairyEllipsoid(fairyPupil,side*.054,.24,.122,.010,.016,.005,fairyBody);
+ fairyEllipsoid(fairyWhite,side*.049,.25,.127,.005,.006,.003,fairyBody);
+ fairyEllipsoid(fairyLip,side*.095,.19,.088,.023,.012,.007,fairyBody).material.color.set(0xd78c8e);
+ // delicately pointed ears
+ const ear=fairyPart(new THREE.ConeGeometry(.036,.11,8),fairySkin,side*.148,.217,0,fairyBody);
+ ear.rotation.z=-side*1.08;
+}
+fairyEllipsoid(fairySkin,0,.216,.122,.018,.025,.016,fairyBody); // nose
+fairyEllipsoid(fairyLip,0,.164,.106,.042,.009,.008,fairyBody); // smile
+fairyLimb([0,.095,0],[0,.025,0],.034,.037,fairySkin,fairyBody);
+fairyEllipsoid(fairyDress,0,-.027,0,.096,.133,.076,fairyBody); // tailored bodice
+const skirt=fairyPart(new THREE.CylinderGeometry(.079,.175,.195,12,1),fairyDress,0,-.166,0,fairyBody);
+for(let i=0;i<8;i++){
+ const angle=i*Math.PI/4;
+ const petal=fairyEllipsoid(fairyDress,Math.sin(angle)*.11,-.233,Math.cos(angle)*.10,.055,.095,.026,fairyBody);
+ petal.rotation.z=-Math.sin(angle)*.35;petal.rotation.x=Math.cos(angle)*.35;
+}
+fairyEllipsoid(fairyGold,0,.045,.082,.044,.022,.011,fairyBody);
+for(const side of [-1,1]){
+ fairyLimb([side*.059,-.25,0],[side*.065,-.36,.008],.023,.018,fairySkin,fairyBody);
+ fairyLimb([side*.065,-.36,.008],[side*.084,-.46,.055],.019,.012,fairySkin,fairyBody);
+ fairyEllipsoid(fairyGold,side*.086,-.468,.075,.029,.018,.054,fairyBody);
+}
+const fairyArmPivot=new THREE.Group();fairyArmPivot.position.set(.105,.037,.015);fairyBody.add(fairyArmPivot);
+fairyLimb([0,0,0],[.08,-.066,.055],.025,.020,fairySkin,fairyArmPivot);
+fairyLimb([.08,-.066,.055],[.165,-.038,.105],.020,.013,fairySkin,fairyArmPivot);
+fairyEllipsoid(fairySkin,.175,-.034,.109,.027,.033,.012,fairyArmPivot);
+for(let i=0;i<4;i++)fairyLimb([.164+i*.009,-.036,.112],[.169+i*.009,-.070,.119],.006,.003,fairySkin,fairyArmPivot);
+fairyLimb([-.105,.037,.015],[-.175,-.065,.035],.024,.017,fairySkin,fairyBody);
+fairyLimb([-.175,-.065,.035],[-.14,-.155,.086],.017,.011,fairySkin,fairyBody);
+fairyEllipsoid(fairySkin,-.14,-.16,.09,.023,.032,.014,fairyBody);
+const fairyWings=[];
+for(const side of [-1,1])for(const upper of [false,true]){
+ const wingPivot=new THREE.Group();wingPivot.position.set(side*.062,.01,-.095);fairyBody.add(wingPivot);
+ const wing=fairyEllipsoid(fairyWingMat,side*(upper?.14:.115),upper?.11:-.075,-.025,upper?.125:.103,upper?.215:.137,.009,wingPivot);
+ wing.rotation.z=side*(upper?-.48:.55);
+ const vein=fairyLimb([0,0,0],[side*(upper?.19:.14),upper?.23:-.15,-.02],.007,.002,fairyGold,wingPivot);
+ fairyWings.push({wing:wingPivot,side});
+}
+const fairySparkles=[];
+for(let i=0;i<12;i++){
+ const m=fairyPart(new THREE.SphereGeometry(.011,6,5),new THREE.MeshBasicMaterial({color:i%2?0xffe8a0:0xa5fff5,transparent:true,opacity:.9}),0,0,0);
+ fairySparkles.push(m);
+}
+let fairyStart=-100, fairyLast=-100, fairyActive=false;
+function fairySound(kind){
+ if(!audioCtx||audioCtx.state!=='running'||audioPrefs.mute)return;
+ if(kind==='slap'){
+  const duration=.19,n=Math.floor(audioCtx.sampleRate*duration),buf=audioCtx.createBuffer(1,n,audioCtx.sampleRate),samples=buf.getChannelData(0);
+  for(let i=0;i<n;i++)samples[i]=(Math.random()*2-1)*Math.exp(-i/n*15);
+  const src=audioCtx.createBufferSource(),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
+  src.buffer=buf;filter.type='bandpass';filter.frequency.value=1200;filter.Q.value=.65;
+  gain.gain.value=.85;src.connect(filter);filter.connect(gain);gain.connect(audioBuses.effects);src.start();
+  audioNote(135,.12,'triangle','effects',.32);
+ }else if(kind==='giggle'){
+  // High pitched, irregular, voiced chirps mimic a playful fairy laugh.
+  [740,900,810,1070,930,1200].forEach((hz,i)=>audioNote(hz,.12,'sine','effects',.13,i*.11));
+ }
+}
+function triggerFairy(){
+ const now=performance.now()/1000;
+ if(fairyActive||now-fairyLast<5)return;
+ fairyActive=true;fairyStart=now;fairyLast=now;fairyRoot.visible=true;animateFairy.slapped=false;animateFairy.giggled=false;
+ toast('🧚 Wrong shelf! The archive fairy objects!');
+}
+function animateFairy(now){
+ if(!fairyActive)return {yaw:0,pitch:0,roll:0};
+ const t=now-fairyStart;
+ if(t>2.6){fairyActive=false;fairyRoot.visible=false;return {yaw:0,pitch:0,roll:0}}
+ // Enter from the side, dart across the camera, slap at 0.78 s, giggle, exit upward.
+ let x,y,z;
+ if(t<.72){const u=t/.72;x=.95-1.02*u;y=.05+.13*Math.sin(u*Math.PI);z=-1.65+.7*u}
+ else if(t<1.22){x=-.07+(t-.72)*.25;y=.15+.05*Math.sin(t*24);z=-.95}
+ else {const u=(t-1.22)/1.38;x=.06+1.25*u;y=.18+1.1*u;z=-.95-.65*u}
+ fairyRoot.position.set(x,y,z);fairyRoot.rotation.set(.08*Math.sin(t*14),.18*Math.sin(t*7),.16*Math.sin(t*10));
+ for(const {wing,side} of fairyWings)wing.rotation.y=side*(.4+.65*Math.sin(t*47));
+ fairyArmPivot.rotation.z=t>.67&&t<1.02?-1.5:.2;
+ fairyBody.rotation.z=.09*Math.sin(t*9);
+ for(let i=0;i<fairySparkles.length;i++){
+  const a=i*2.4+t*4,r=.17+.045*Math.sin(t*9+i);
+  fairySparkles[i].position.set(Math.cos(a)*r,Math.sin(a)*r*.8,Math.sin(a*1.3)*.12);
+ }
+ if(t>=.78&&!animateFairy.slapped){animateFairy.slapped=true;fairySound('slap')}
+ if(t>=1.13&&!animateFairy.giggled){animateFairy.giggled=true;fairySound('giggle')}
+ const hit=Math.max(0,(t-.78)/.42),impulse=t>=.78&&t<1.4?Math.exp(-hit*4)*Math.sin(hit*12):0;
+ return {yaw:impulse*.22,pitch:-impulse*.085,roll:impulse*.17};
+}
+function awardRow(){audioCue('complete');xp+=25;points+=1;toast('✨ Series complete! +25 XP · +1 skill point')}
+function placeBook(id,shelfId){if(shelfId>=SERIES||catalog[id].series!==shelfId){triggerFairy();return false}let expected=catalog[id].series*8+catalog[id].vol-1;if(id!==expected)return false;if(placed.has(id)){toast('That volume is already shelved.');return false}const sh=shelves[shelfId];flyBook(id,'shelf',{x:camera.position.x,y:camera.position.y-.32,z:camera.position.z});placed.add(id);inventory.splice(inventory.indexOf(id),1);spineMesh.setColorAt(id,seriesColor(catalog[id].series));spineMesh.instanceColor.needsUpdate=true;updateBindingBands(id);const shelfCount=Array.from({length:8},(_,v)=>placed.has(shelfId*8+v)).filter(Boolean).length;const gainedXP=shelfCount*2;audioCue('shelf',shelfCount);xp+=gainedXP;if(shelfCount===8){awardRow();toast(`Shelved ${name(id)} · 8/8 · +${gainedXP} XP · Series complete!`)}else toast(`Shelved ${name(id)} · ${shelfCount}/8 · +${gainedXP} XP`);save();return true}
+function interact(){if($('panel').style.display==='block')return;let t=target();if(!t){toast('Move closer and aim at an object');return}if(t.type==='book'){if(inventory.length>=satchelLimit()){toast('Satchel full');return}audioCue('pickup');flyBook(t.id,'pickup',{x:t.obj.x,y:.16+(t.id%3)*.06,z:t.obj.z});inventory.push(t.id);delete dropped[t.id];save();refreshLoose();toast(`Picked up ${name(t.id)}`)}else if(t.type==='shelf'){let match=inventory.filter(id=>catalog[id].series===t.id).sort((a,b)=>a-b);if(!match.length){if(inventory.length)triggerFairy();else toast('Your satchel is empty');return}let done=0;for(let id of match)if(placeBook(id,t.id))done++;if(done)refreshLoose()}else if(t.type==='key'){audioCue('key');keys.add(t.id);t.obj.mesh.visible=false;save();toast(`Hidden key found! ${keys.size}/6`)}else if(t.type==='chest'){if(keys.size<3+t.id*3){toast(`Need ${3+t.id*3} hidden keys to open this chest`);return}chests.add(t.id);t.obj.mesh.visible=false;save();toast(t.id===0?'Sprint unlocked! Movement speed increased.':'Mega-jump chest opened! Jump controls are planned for a later update.') }updateHUD()}
+$('act').onclick=interact;function panel(title,html){$('panelTitle').textContent=title;$('content').innerHTML=html;$('panel').style.display='block';resetJoy();lookId=null}function close(){ $('panel').style.display='none'}$('close').onclick=close;
+function dropBook(id){if(!inventory.includes(id))return;let forwardX=-Math.sin(yaw),forwardZ=-Math.cos(yaw);let x=Math.max(-25.5,Math.min(25.5,camera.position.x+forwardX*1.4)),z=Math.max(-27.5,Math.min(27.5,camera.position.z+forwardZ*1.4));const safe=findSafeDrop(x,z,id);if(!safe){toast('No clear space to drop that book here');return}dropped[id]=safe;inventory.splice(inventory.indexOf(id),1);active=0;save();refreshLoose();toast('Dropped '+name(id));openSatchel()}
+let satchelView='series';
+function openSatchel(){let sorted=[...inventory];if(xpPerks.satchelSort){if(satchelView==='series')sorted.sort((a,b)=>catalog[a].series-catalog[b].series||catalog[a].vol-catalog[b].vol);else if(satchelView==='genre')sorted.sort((a,b)=>catalog[a].genre-catalog[b].genre||a-b);else if(satchelView==='volume')sorted.sort((a,b)=>catalog[a].vol-catalog[b].vol||a-b)}let list=sorted.map((id,i)=>`<div class="book"><b>${name(id)}</b><br><small>${genres[catalog[id].genre]} · Series ${catalog[id].series+1} · Shelf ${catalog[id].series+1}</small><div><button data-select="${id}">${inventory[active]===id?'✓ Selected':'Select'}</button><button data-drop="${id}">DROP BOOK</button></div></div>`).join('');panel('Satchel · '+inventory.length+'/'+satchelLimit(),`<p>Select a book or drop it on the floor in front of you. Dropped books can be picked up again. Shelve volumes in any order.</p>${xpPerks.satchelSort?`<div class="mapTools"><button data-sortmode="series">By series</button><button data-sortmode="genre">By genre</button><button data-sortmode="volume">By volume</button></div><p>Sorted by ${satchelView}.</p>`:'<p>Unlock Satchel Sorting for 65 XP in MAGIC.</p>'}${list||'<p>Empty — collect scattered books.</p>'}`);$('content').querySelectorAll('[data-sortmode]').forEach(b=>b.onclick=()=>{satchelView=b.dataset.sortmode;openSatchel()});$('content').querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{active=inventory.indexOf(Number(b.dataset.select));close();toast('Selected '+name(inventory[active]))});$('content').querySelectorAll('[data-drop]').forEach(b=>b.onclick=()=>dropBook(Number(b.dataset.drop)))}
+$('inventory').onclick=openSatchel;
+$('skills').onclick=()=>showSkills();
+function buyPerk(k,cost){if(['satchel','magnet','swift'].includes(k))cost=tierCost(k);if(k==='satchel'||k==='magnet'){const rank=k==='satchel'?satchelRank():magnetRank(),max=k==='satchel'?8:3;if(rank>=max){toast('Upgrade at maximum rank');return}if(xpAvailable()<cost){toast('Earn more XP by shelving books');return}xpSpent+=cost;xpPerks[k]=rank+1;if(k==='magnet'&&inventory.length===0)magnetCycleActive=true;}else if(k==='swift'){if(swiftRank()>=3){toast('Swiftstep fully upgraded');return}if(xpAvailable()<cost){toast('Earn more XP by shelving books');return}xpSpent+=cost;xpPerks.swift=swiftRank()+1;}else{if(xpPerks[k]){toast('Already purchased');return}if(xpAvailable()<cost){toast('Earn more XP by shelving books');return}xpSpent+=cost;xpPerks[k]=true;}audioCue('upgrade');save();showSkills();updateHUD();toast('Upgrade unlocked!')}
+function lanternToggle(){if(!xpPerks.lantern)return;lanternOn=!lanternOn;lanternLight.intensity=lanternOn?5:0;toast(lanternOn?'Lantern lit':'Lantern extinguished');showSkills()}
+function teleport(){if(!skill.teleport)return;const now=abilityClock();if(now<teleportCooldown){toast(`Portal recharging: ${Math.ceil(teleportCooldown-now)}s`);return}const upstairs=floorNow()===0;camera.position.set(0,upstairs?UPPER_EYE:GROUND_EYE,upstairs?7:25.8);upperLevel=upstairs;stairTravel=false;teleportCooldown=now+30;close();updateHUD();toast(upstairs?'Teleported to upper landing':'Teleported to ground landing')}
+function spectral(){if(!skill.spectral)return;const now=abilityClock();if(now<spectralCooldown){toast(`Spectral Librarian recharging: ${Math.ceil(spectralCooldown-now)}s`);return}spectralUntil=now+60;spectralCooldown=now+180;spectralNext=now;close();toast('Spectral Librarian summoned for 60 seconds!')}
+function oracle(series){if(!skill.oracle)return;const id=Number(series)-1;if(!Number.isInteger(id)||id<0||id>=SERIES){toast('Choose a series from 1 to 384');return}oracleSeries=id;oracleUntil=abilityClock()+45;mapFloor=Math.floor(id/200);mapMode='books';mapView();toast('Oracle Vision: 45 seconds')}
+function abilityTick(now,dt){
+ lanternLight.position.copy(camera.position);lanternLight.intensity=lanternOn&&xpPerks.lantern?5:0;
+ if(inventory.length===0&&magnetRank()>0)magnetCycleActive=true; if(inventory.length>=satchelLimit())magnetCycleActive=false;
+ if(magnetRank()>0&&magnetCycleActive&&inventory.length<satchelLimit()&&now>=magnetTick){magnetTick=now+.25;let nearest=-1,best=magnetRadius()**2;for(let id=0;id<TOTAL;id++){if(placed.has(id)||inventory.includes(id))continue;const p=dropped[id]||allLoosePositions[id];if(floorNow()!==0)continue;const d=(p.x-camera.position.x)**2+(p.z-camera.position.z)**2;if(d<best){best=d;nearest=id}}if(nearest>=0){const src=dropped[nearest]||allLoosePositions[nearest];audioCue('pickup');flyBook(nearest,'pickup',{x:src.x,y:.16+(nearest%3)*.06,z:src.z});inventory.push(nearest);delete dropped[nearest];save();refreshLoose();if(inventory.length>=satchelLimit()){magnetCycleActive=false;toast('🧲 Satchel full — magnet paused until empty')}else toast('🧲 Collected '+name(nearest));updateHUD()}}
+ if(skill.spectral&&now<spectralUntil&&now>=spectralNext){spectralNext=now+1.5;let chosen=-1;for(const id of inventory){const sh=shelves[catalog[id].series];if(sh.floor!==floorNow())continue;if(Math.hypot(sh.x-camera.position.x,sh.z-camera.position.z)<5){chosen=id;break}}if(chosen>=0){placeBook(chosen,catalog[chosen].series);refreshLoose();updateHUD()}}
+ if(now>=oracleUntil)oracleSeries=null;
+}
+
+let magicTab='xp';
+function showSkills(tab=magicTab){magicTab=tab;
+ const costs={highlight:1,sort:2,assemble:4,shelfNumbers:skill.shelfNumbers?2:1,teleport:5,spectral:8,oracle:6};
+ const xpButtons=`<p>Available XP: <b>${xpAvailable()}</b> · Total earned: ${xp} · Level ${levelNow()}</p>
+ <button data-perk="satchelSort">🗂️ Satchel Sorting · ${xpPerks.satchelSort?'OWNED':'65 XP'}<small>Sort by series, genre or volume directly in SATCHEL</small></button>
+ <button data-perk="radar">📖 Book Radar · ${xpPerks.radar?'OWNED':'60 XP'}</button>
+ <button data-perk="compass">🧭 Waypoint Compass · ${xpPerks.compass?'OWNED':'40 XP'}</button>
+ <button data-perk="satchel">🎒 Bigger Satchel · ${satchelRank()>=8?'MAX RANK':tierCost('satchel')+' XP'} · Rank ${satchelRank()}/8 · ${satchelLimit()} slots<small>+5 slots per rank; maximum 50</small></button>
+ <button data-perk="swift">👢 Swiftstep Boots · ${swiftRank()>=3?'MAX':`${tierCost('swift')} XP · Rank ${swiftRank()}/3`}<small> +15% speed per rank</small></button>
+ <button data-perk="magnet">🧲 Book Magnet · ${magnetRank()>=3?'MAX RANK':tierCost('magnet')+' XP'} · Rank ${magnetRank()}/3<small>Range ${magnetRadius().toFixed(1)}m · Activates with an empty satchel, pauses when full until emptied again</small></button>
+ <button data-perk="lantern">🏮 Archivist's Lantern · ${xpPerks.lantern?'OWNED':'90 XP'}<small> Warm light follows your camera</small></button>
+ ${xpPerks.lantern?`<button id="lanternToggle">${lanternOn?'EXTINGUISH':'LIGHT'} LANTERN</button>`:''}`;
+ const spButtons=`<p>Available SP: <b>${points}</b> · Earn 1 SP for each completed 8-volume series.</p>
+ <button data-skill="highlight">🔮 Series Sight · ${skill.highlight?'OWNED':'1 SP'}</button>
+ <button data-skill="sort">📚 Order Satchel · ${skill.sort?'OWNED':'2 SP'}</button>
+ <button data-skill="assemble">✨ Assemble Series · ${skill.assemble?'OWNED':'4 SP'}</button>
+ <button data-skill="shelfNumbers">🏷️ Shelf Sight · ${skill.shelfNumbers>=2?'MAX':skill.shelfNumbers?'2 SP upgrade':'1 SP'}</button>
+ <button data-skill="teleport">🌀 Arcane Teleportation · ${skill.teleport?'OWNED':'5 SP'}<small> Travel between floor landings; 30s cooldown</small></button>
+ <button data-skill="spectral">👻 Spectral Librarian · ${skill.spectral?'OWNED':'8 SP'}<small> Shelve carried books within 5m for 60s; 180s cooldown</small></button>
+ <button data-skill="oracle">👁️ Oracle's Vision · ${skill.oracle?'OWNED':'6 SP'}<small> Highlight missing books from a chosen series on the atlas for 45s</small></button>`;
+ const abilityButtons=`<p>Activate purchased powers. Cooldowns continue while exploring.</p>
+ ${xpPerks.lantern?`<button id="lanternToggle">🏮 ${lanternOn?'Extinguish':'Light'} Lantern</button>`:''}
+ ${skill.teleport?`<button id="teleportNow">🌀 Teleport to ${floorNow()?'ground':'upper'} floor · ${Math.max(0,Math.ceil(teleportCooldown-abilityClock()))}s cooldown</button>`:''}
+ ${skill.spectral?`<button id="spectralNow">👻 Summon Spectral Librarian · ${Math.max(0,Math.ceil(spectralCooldown-abilityClock()))}s cooldown</button>`:''}
+ ${skill.oracle?`<div class="abilitySelect"><label for="oraclePick">👁️ Oracle's Vision — Series 1–384</label><input id="oraclePick" type="number" min="1" max="384" value="1"><button id="oracleNow">Reveal missing volumes</button></div>`:''}
+ ${skill.sort?'<button id="autoSort">📚 Sort satchel</button>':''}
+ ${!(xpPerks.lantern||skill.teleport||skill.spectral||skill.oracle||skill.sort)?'<p>Purchase upgrades in the XP and SP tabs to unlock actions.</p>':''}`;
+ panel('Character Progression',`<div class="mapTools"><button id="xpTab">XP Upgrades</button><button id="spTab">SP Magic</button><button id="abilityTab">Abilities</button></div>${tab==='xp'?xpButtons:tab==='sp'?spButtons:abilityButtons}`);
+ $('xpTab').onclick=()=>showSkills('xp');$('spTab').onclick=()=>showSkills('sp');$('abilityTab').onclick=()=>showSkills('abilities');
+ $('content').querySelectorAll('[data-perk]').forEach(b=>b.onclick=()=>buyPerk(b.dataset.perk,{satchelSort:65,radar:60,compass:40,satchel:100,swift:75,magnet:125,lantern:90}[b.dataset.perk]));
+ $('content').querySelectorAll('[data-skill]').forEach(b=>b.onclick=()=>{let k=b.dataset.skill;if(k==='shelfNumbers'&&skill.shelfNumbers>=2){toast('Shelf Sight fully upgraded');return}if(k!=='shelfNumbers'&&skill[k]){toast('Already unlocked');return}if(points<costs[k]){toast('Not enough skill points');return}points-=costs[k];skill[k]=k==='shelfNumbers'?(Number(skill[k])||0)+1:1;save();refreshShelfNumbers();showSkills()});
+ if($('lanternToggle'))$('lanternToggle').onclick=lanternToggle;
+ if($('teleportNow'))$('teleportNow').onclick=teleport;
+ if($('spectralNow'))$('spectralNow').onclick=spectral;
+ if($('oracleNow'))$('oracleNow').onclick=()=>oracle($('oraclePick').value);
+ if($('autoSort'))$('autoSort').onclick=()=>{inventory.sort((a,b)=>a-b);save();toast('Satchel sorted!');showSkills()};
+}
+let mapFloor=0,mapMode='progress';
+function mapXY(x,z){return [18+(x+27)/54*384,18+(z+27)/54*384]}
+function mapView(){
+ panel('Enchanted Archive Atlas',`<div class="mapTools"><button id="mapF0">Ground floor</button><button id="mapF1">Upper floor</button></div><div class="mapTools"><button id="mapProgress">Progress</button><button id="mapBooks">Loose books</button></div><canvas id="mapCanvas" width="420" height="420"></canvas><div id="mapInfo">Tap a shelf to inspect its series and collection progress.</div><p><small>🟡 You · 🟣 Stairs · 🟢 Complete · 🟠 Partial · 🔵 Empty · ◻ Reserve. Tap any shelf to see details. ${oracleSeries!==null&&abilityClock()<oracleUntil?'🟡 Oracle highlights missing volumes (both floors). ':''}${xpPerks.radar?'Book Radar active.':'Unlock Book Radar with XP to locate scattered books.'} ${xpPerks.compass?'Tap a shelf to set a waypoint.':'Unlock Waypoint Compass to track a selected shelf.'}</small></p>`);
+ const ctx=$('mapCanvas').getContext('2d');ctx.fillStyle='#171525';ctx.fillRect(0,0,420,420);
+ ctx.strokeStyle='#a78c5a';ctx.lineWidth=3;ctx.strokeRect(14,14,392,392);
+ for(let n=0;n<=8;n++){ctx.strokeStyle='#514661';ctx.lineWidth=.6;let p=18+n*48;ctx.beginPath();ctx.moveTo(p,18);ctx.lineTo(p,402);ctx.moveTo(18,p);ctx.lineTo(402,p);ctx.stroke()}
+ const [sx,sz]=mapXY(0,16);ctx.fillStyle='#9365c8';ctx.fillRect(sx-14,mapXY(0,9.75)[1],28,mapXY(0,22.4)[1]-mapXY(0,9.75)[1]);
+ ctx.fillStyle='#e5c5ff';ctx.font='bold 12px system-ui';ctx.fillText('STAIRS',sx+17,sz);
+ if(mapMode==='books'&&xpPerks.radar){ctx.fillStyle='#d8b9ff';for(let id=0;id<TOTAL;id++){if(placed.has(id)||inventory.includes(id))continue;const p=dropped[id]||allLoosePositions[id];const [x,z]=mapXY(p.x,p.z);ctx.fillRect(x,z,1.5,1.5)}}
+ if(oracleSeries!==null&&abilityClock()<oracleUntil){for(let v=0;v<8;v++){const id=oracleSeries*8+v;if(placed.has(id)||inventory.includes(id))continue;const p=dropped[id]||allLoosePositions[id];if(mapFloor!==0)continue;const [ox,oz]=mapXY(p.x,p.z);ctx.fillStyle='#ffef83';ctx.beginPath();ctx.arc(ox,oz,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#7040ab';ctx.lineWidth=2;ctx.stroke()}}
+ for(let i=mapFloor*200;i<(mapFloor+1)*200;i++){
+ const sh=shelves[i],n=i<SERIES?Array.from({length:8},(_,v)=>placed.has(i*8+v)?1:0).reduce((a,b)=>a+b,0):-1;
+ const [x,z]=mapXY(sh.x,sh.z);ctx.fillStyle=n<0?'#7b7386':n===8?'#61c98d':n>0?'#e2a45b':'#658db3';ctx.fillRect(x-7,z-4,14,8);
+ if(waypoint===i){ctx.strokeStyle='#ffeb91';ctx.lineWidth=2;ctx.strokeRect(x-10,z-7,20,14)}
+ }
+ if(mapFloor===floorNow()){let [x,z]=mapXY(camera.position.x,camera.position.z);ctx.fillStyle='#ffd45e';ctx.beginPath();ctx.arc(x,z,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff3b5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,z);ctx.lineTo(x-Math.sin(yaw)*17,z-Math.cos(yaw)*17);ctx.stroke()}
+ ctx.fillStyle='#eadcae';ctx.font='bold 14px system-ui';ctx.fillText(mapFloor?'UPPER FLOOR':'GROUND FLOOR',24,36);
+ $('mapF0').onclick=()=>{mapFloor=0;mapView()};$('mapF1').onclick=()=>{mapFloor=1;mapView()};
+ $('mapProgress').onclick=()=>{mapMode='progress';mapView()};
+ $('mapBooks').onclick=()=>{if(!xpPerks.radar){toast('Unlock Book Radar in MAGIC for 60 XP');return}mapMode='books';mapView()};
+ $('mapCanvas').onclick=e=>{
+ const rect=e.currentTarget.getBoundingClientRect(),x=(e.clientX-rect.left)*420/rect.width,z=(e.clientY-rect.top)*420/rect.height;
+ let best=-1,dist=15;
+ for(let i=mapFloor*200;i<(mapFloor+1)*200;i++){let [a,b]=mapXY(shelves[i].x,shelves[i].z),d=Math.hypot(a-x,b-z);if(d<dist){dist=d;best=i}}
+ if(best<0){$('mapInfo').textContent='Tap a colored shelf marker to inspect it.';return}
+ const n=best<SERIES?Array.from({length:8},(_,v)=>placed.has(best*8+v)?1:0).reduce((a,b)=>a+b,0):0;
+ $('mapInfo').textContent=`Shelf #${best+1} · ${best<SERIES?title(best*8)+' · '+n+'/8 volumes':'Reserve shelf'}`;
+ if(xpPerks.compass){waypoint=best;mapView();$('mapInfo').textContent=`Waypoint: Shelf #${best+1} · ${n}/8 volumes. Close map to follow compass.`}
+ };
+}
+$('map').onclick=()=>{mapFloor=floorNow();mapView()};
+$('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 3,072 books across this two-story archive. Restore all 384 eight-volume series on 400 shelves.</p><p><b>Controls:</b> Left thumb joystick to move; right thumb drag to look. Both work simultaneously. Tap PICK UP or PLACE BOOK. Desktop: WASD + mouse drag + E.</p><p><b>Sorting:</b> Pick up to 10 books. Each book has a genre, series and volume (1–8). Find its numbered shelf and place volumes in any order. A complete series earns a skill point.</p><p><b>Keys:</b> Find 6 keys. The upstairs first chest opens with 3 keys and unlocks sprint. The second opens with all 6 and awards mega-jump access (jump physics not yet implemented).</p><p><b>Shelf Sight:</b> Spend 1 skill point in MAGIC to reveal nearby shelf numbers above bookcases. Spend 2 more to extend visibility.</p><p><b>Dropping:</b> Open SATCHEL and tap DROP BOOK. Books remain on the floor and can be recovered.</p><p><b>Progress:</b> Saved on this browser/device. v0.9.6 improves two-way staircase travel and retains precise crosshair targeting and shelf progress to the improved library layout; it remains a foundation build; decoration and navigation remain under development.</p><button id="restart">Reset all progress</button>`);const resetButton=$('content').querySelector('#restart');if(resetButton)resetButton.onclick=()=>{if(confirm('Erase all v0.7 progress?')){localStorage.removeItem(storage);location.reload()}}};
+// Stair travel is an explicit traversal state. Ground-floor visitors can pass
+// below the staircase without being snapped onto its steps.
+let stairTravel=false,upperLevel=false;
+const STAIR_BOTTOM=22.4,STAIR_TOP=9.75,GROUND_EYE=1.65,UPPER_EYE=5.35;
+const STAIR_WALK_HALF_WIDTH=2.13; // visible treads span x +/-2.275
+function stairHeight(z){return GROUND_EYE+(UPPER_EYE-GROUND_EYE)*Math.max(0,Math.min(1,(STAIR_BOTTOM-z)/(STAIR_BOTTOM-STAIR_TOP)))}
+let prev=performance.now(),hudTick=0;
+function loop(now){
+ requestAnimationFrame(loop);
+ const dt=Math.min(.05,(now-prev)/1000);prev=now;audioFrame(now/1000,$('panel').style.display!=='block'&&(Math.abs(jx)+Math.abs(jy)>.15||keysDown.KeyW||keysDown.KeyA||keysDown.KeyS||keysDown.KeyD),magnetRank()>0&&magnetCycleActive&&inventory.length<satchelLimit());
+ const fairyReaction=animateFairy(now/1000);camera.rotation.set(pitch+fairyReaction.pitch,yaw+fairyReaction.yaw,fairyReaction.roll);
+ if($('panel').style.display!=='block'){
+  let x=jx+(keysDown.KeyD?1:0)-(keysDown.KeyA?1:0);
+  let z=-jy+(keysDown.KeyW?1:0)-(keysDown.KeyS?1:0);
+  const len=Math.hypot(x,z);if(len>1){x/=len;z/=len}
+  const speed=(chests.has(0)?4.4:3.1)*(1+Math.min(0.2,(levelNow()-1)*0.015))*(1+.15*swiftRank())*(keysDown.ShiftLeft?1.4:1)*dt;
+  const dx=(Math.cos(yaw)*x-Math.sin(yaw)*z)*speed;
+  const dz=(-Math.sin(yaw)*x-Math.cos(yaw)*z)*speed;
+  const oldX=camera.position.x,oldZ=camera.position.z;
+  function can(a,b){
+   if(Math.abs(a)>26.3||Math.abs(b)>28.2)return false;
+   const inStairLane=Math.abs(a)<=STAIR_WALK_HALF_WIDTH;
+   // A traveller on the steps cannot leave through the stair rails.
+   if(stairTravel&&b>STAIR_TOP&&b<STAIR_BOTTOM&&!inStairLane)return false;
+   // The upper floor has a real central opening: only the stair path can cross it.
+   // Allow the top landing to be entered before stairTravel switches on.
+   // The old guard rejected this movement, so descending could never start.
+   if(upperLevel&&!stairTravel&&inStairLane&&b>STAIR_TOP+.7&&b<23)return false;
+   // Prevent ground-level clipping through stair treads from a diagonal side approach.
+   // Enter the ramp only by crossing its lower entrance, not through the side rails.
+   if(!upperLevel&&!stairTravel&&inStairLane&&b<STAIR_BOTTOM&&b>STAIR_TOP+.7 && !(oldZ>=STAIR_BOTTOM&&dz<0))return false;
+   const collisionFloor=upperLevel?1:0;
+   for(const sh of shelves){if(sh.floor!==collisionFloor)continue;
+    if(Math.abs(a-sh.x)<1.43&&Math.abs(b-sh.z)<.62)return false;
+   }
+   return true;
+  }
+  const nx=oldX+dx,nz=oldZ+dz;
+  if(can(nx,oldZ))camera.position.x=nx;
+  if(can(camera.position.x,nz))camera.position.z=nz;
+  const centered=Math.abs(camera.position.x)<=STAIR_WALK_HALF_WIDTH;
+  // Only enter the staircase from a landing, never by walking sideways underneath it.
+  if(!stairTravel&&centered){
+   if(!upperLevel&&oldZ>=STAIR_BOTTOM&&camera.position.z<STAIR_BOTTOM&&dz<0)stairTravel=true;
+   else if(upperLevel&&oldZ<=STAIR_TOP+.65&&camera.position.z>STAIR_TOP&&dz>0)stairTravel=true;
+  }
+  if(stairTravel){
+   if(camera.position.z<=STAIR_TOP){stairTravel=false;upperLevel=true}
+   else if(camera.position.z>=STAIR_BOTTOM){stairTravel=false;upperLevel=false}
+  }
+  const desired=stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE);
+  camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*9);
+ }
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.21: Natural book scatter loaded!');
+} catch(error) {
+ console.error('Arcane Archives startup failed:',error);
+ statusBox.style.display='block';
+ statusBox.textContent='The 3D archive could not start: '+String(error?.message||error)+'. Try refreshing or opening in Safari.';
+}
+</script></body></html>
