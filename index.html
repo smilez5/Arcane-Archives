@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.9</title><style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#100d1b;color:#f7e9cb;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#342849e8;border:1px solid #bfa36c;color:#ffedc3;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#1b1429d9;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#67502f}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#241c36e8;border:1px solid #bfa36c;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#171225f7;border:1px solid #bfa36c;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#211b32;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #bfa36c;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#30243f;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.9</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.11</title><style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.11</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -25,13 +25,13 @@ const catalog=Array.from({length:TOTAL},(_,id)=>({id,series:Math.floor(id/8),vol
 const storage='arcane_archives_v07';let saved={};try{saved=JSON.parse(localStorage.getItem(storage)||'{}')}catch{};
 let placed=new Set((saved.placed||[]).filter(x=>Number.isInteger(x)&&x>=0&&x<TOTAL)),inventory=(saved.inventory||[]).filter(x=>Number.isInteger(x)&&x>=0&&x<TOTAL&&!placed.has(x)).slice(0,50),skill=saved.skill||{highlight:0,sort:0,assemble:0},xp=Number(saved.xp)||0,points=Number(saved.points)||0,keys=new Set(saved.keys||[]),chests=new Set(saved.chests||[]),active=0,dropped=saved.dropped||{},xpSpent=Math.max(0,Number(saved.xpSpent)||0),xpPerks=saved.xpPerks||{},waypoint=null;
 const save=()=>{try{localStorage.setItem(storage,JSON.stringify({placed:[...placed],inventory,skill,xp,xpSpent,xpPerks,points,keys:[...keys],chests:[...chests],dropped}))}catch{toast('Save storage full; progress may not persist')}};
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x171325);scene.fog=new THREE.Fog(0x171325,20,90);const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.07,130),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.3));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);renderer.domElement.style.touchAction='none';
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x10132e);scene.fog=new THREE.Fog(0x10132e,20,90);const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.07,130),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.3));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.23;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);renderer.domElement.style.touchAction='none';
 for(const type of ['gesturestart','gesturechange','gestureend'])document.addEventListener(type,e=>e.preventDefault(),{passive:false});
 renderer.domElement.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.65,25.8);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
-scene.add(new THREE.HemisphereLight(0xf0e6ff,0x34233b,2.15));for(let z of [-20,0,20]){let l=new THREE.PointLight(0xe3baff,120,42);l.position.set(0,5,z);scene.add(l)};
-// v0.9.9: deterministic hand-painted procedural materials; no remote textures.
+scene.add(new THREE.HemisphereLight(0xe0ddff,0x24214c,2.15));for(let z of [-20,0,20]){let l=new THREE.PointLight(0x9874ff,120,42);l.position.set(0,5,z);scene.add(l)};
+// v0.9.11: deterministic hand-painted procedural materials; no remote textures.
 function archiveTexture(kind){
  const c=document.createElement('canvas');c.width=c.height=256;const q=c.getContext('2d');
  let seed=kind==='wood'?119:kind==='stone'?229:331;
@@ -52,13 +52,13 @@ function archiveTexture(kind){
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=2;return t;
 }
 const oakTexture=archiveTexture('wood'),masonryTexture=archiveTexture('stone'),floorTexture=archiveTexture('floor');
-const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=material(0x60412e),gold=material(0xcaa467),stone=new THREE.MeshStandardMaterial({map:masonryTexture,roughness:.98}),shelfMat=new THREE.MeshStandardMaterial({map:oakTexture,color:0x94735d,roughness:.78}),bookMats=[0xb96877,0x507b82,0x9b5742,0x6d548b,0x627f57,0xb38d4d,0x52649b,0x8b6755].map(material);
+const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=material(0x503075),gold=material(0xffca68),stone=new THREE.MeshStandardMaterial({map:masonryTexture,roughness:.98}),shelfMat=new THREE.MeshStandardMaterial({map:oakTexture,color:0xc5a5ef,roughness:.78}),bookMats=[0xb96877,0x507b82,0x9b5742,0x6d548b,0x627f57,0xb38d4d,0x52649b,0x8b6755].map(material);
 function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
 box(0,-.18,0,56,.3,60,stone);box(0,10.8,0,56,.25,60,stone);for(let x of [-28,28])box(x,5.4,0,.3,10.8,60,stone);for(let z of [-30,30])box(0,5.4,z,56,10.8,.3,stone);
 
-// v0.9.9 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
+// v0.9.11 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
 // Decorative wall panels do not change collision geometry, stairs or interaction rays.
-const daylightGlass=new THREE.MeshBasicMaterial({color:0xb8e9ff,transparent:true,opacity:.86,depthWrite:false,side:THREE.DoubleSide});
+const daylightGlass=new THREE.MeshBasicMaterial({color:0x7fe9ff,transparent:true,opacity:.86,depthWrite:false,side:THREE.DoubleSide});
 const daylightCore=new THREE.MeshBasicMaterial({color:0xfff1c5,transparent:true,opacity:.40,depthWrite:false,side:THREE.DoubleSide});
 const windowFrame=material(0x5b4139),windowLead=material(0xc7a56d);
 const sunlightMat=new THREE.MeshBasicMaterial({color:0xffdfa0,transparent:true,opacity:.115,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
@@ -96,12 +96,13 @@ function addSunWindow(side,z,level){
 }
 for(const z of [-20,-8,4,16])for(const side of [-1,1])for(const level of [0,1])addSunWindow(side,z,level);
 // Ambient daylight softens the darker fantasy lighting without overexposing the archive.
-const sunlight=new THREE.DirectionalLight(0xffe1b0,1.3);
+const jewelFill=new THREE.DirectionalLight(0x65dfff,.52);jewelFill.position.set(16,9,12);scene.add(jewelFill);
+const sunlight=new THREE.DirectionalLight(0xffd7a1,1.3);
 sunlight.position.set(-18,16,-8);scene.add(sunlight);
 
 // Solid second-storey floor with a dedicated central stairwell opening.
 // The earlier four perimeter strips left a huge uncovered void above the ground floor.
-const floorWood=new THREE.MeshStandardMaterial({map:floorTexture,roughness:.82}),trim=material(0xb28a55),plank=material(0x88644b);
+const floorWood=new THREE.MeshStandardMaterial({map:floorTexture,roughness:.82}),trim=material(0xffc86b),plank=material(0x7255a6);
 // Upper deck: four opaque slabs surrounding a 5.6 x 14.5 stair opening (z 8.5..23).
 box(-15.4,3.70,0,25.2,.34,56,floorWood);
 box(15.4,3.70,0,25.2,.34,56,floorWood);
@@ -110,13 +111,13 @@ box(0,3.70,25.5,5.6,.34,5,floorWood);
 // Solid ground-floor timber finish over the original stone foundation.
 box(0,-.012,0,55,.08,58,floorWood);
 // Subtle plank seams on both floors; shallow enough not to obstruct movement.
-const seam=material(0x523729);
+const seam=material(0x31214d);
 for(let z=-27;z<=27;z+=3){box(0,.033,z,54.5,.006,.035,seam);
   if(z<8.5||z>23)box(0,3.88,z,54.5,.006,.035,seam);
   else {box(-15.4,3.88,z,25,.006,.035,seam);box(15.4,3.88,z,25,.006,.035,seam)}
 }
 // Geometric parquet inlay: batched thin lines sit flush with the timber.
-const parquetLine=material(0x9c7855),parquetBorder=material(0xc19a65);
+const parquetLine=material(0x8b6cce),parquetBorder=material(0xf3bc69);
 for(let z=-26;z<=26;z+=2.6){for(const x of [-24,-18,-12,-6,6,12,18,24]){
  box(x,.034,z,3.4,.008,.024,parquetLine);
  if(z<8.5||z>23||Math.abs(x)>3)box(x,3.881,z,3.4,.007,.024,parquetLine);
@@ -125,33 +126,43 @@ for(const x of [-25,25]){box(x,.038,0,.055,.012,55,parquetBorder);box(x,3.885,0,
 // Gold railing around the stair opening, with a gap at the bottom landing.
 for(const x of [-2.85,2.85]){box(x,4.48,15.75,.12,.12,14.5,trim);
   for(let z=9;z<23;z+=2.2)box(x,4.16,z,.1,.62,.1,trim)}
-box(0,4.48,8.5,5.7,.12,.12,trim);
+// Top stair entrance stays open: no cross-rail across the walking path.
+// Solid top landing bridges the upper-floor edge to the first stair tread.
+// This closes the previously uncovered opening between z=8.5 and the first tread.
+const landingOak=material(0x694194),landingBrass=material(0xffd078);
+box(0,3.79,9.16,4.55,.18,1.48,landingOak); // surface 3.88, flush with upper floor
+box(0,3.893,9.87,4.55,.026,.065,landingBrass);
+// Guard the exposed edges of the top landing without blocking its entrance.
+for(const x of [-2.51,2.51]){
+  box(x,4.41,9.18,.12,1.05,.13,wood);
+  box(x,4.95,9.18,.13,.12,1.5,trim);
+}
 // v0.9.6: Visible oak staircase, individual treads, brass edge details and sloping handrails.
-const stairOak=new THREE.MeshStandardMaterial({map:oakTexture,roughness:.75}),stairRiser=material(0x543626),stairGold=material(0xd3ac6b);
+const stairOak=new THREE.MeshStandardMaterial({map:oakTexture,roughness:.75}),stairRiser=material(0x352352),stairGold=material(0xffd078);
 const stairZ0=9.75,stairZ1=22.4,stairRise=3.7,stairSteps=19;
 for(let i=0;i<stairSteps;i++){
  const z=stairZ0+(i+.5)*(stairZ1-stairZ0)/stairSteps;
- const top=stairRise*(1-i/stairSteps);
- const next=stairRise*(1-(i+1)/stairSteps);
+ const top=3.88-(3.88-.12)*(i/stairSteps);
+ const next=3.88-(3.88-.12)*((i+1)/stairSteps);
  // Each step is an opaque horizontal tread with a matching riser face.
  box(0,top-.065,z,4.55,.13,(stairZ1-stairZ0)/stairSteps+.025,stairOak);
  box(0,(top+next)/2-.06,z+(stairZ1-stairZ0)/stairSteps/2,4.55,top-next,.10,stairRiser);
  box(0,top+.008,z-(stairZ1-stairZ0)/stairSteps*.39,4.5,.025,.045,stairGold);
 }
 function slopedRail(x){
- const a=new THREE.Vector3(x,4.65,stairZ0),b=new THREE.Vector3(x,.98,stairZ1);
+ const a=new THREE.Vector3(x,4.93,stairZ0),b=new THREE.Vector3(x,.98,stairZ1);
  const d=new THREE.Vector3().subVectors(b,a);
  const beam=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,d.length(),8),stairGold);
  beam.position.copy(a).add(b).multiplyScalar(.5);
  beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());scene.add(beam);
  for(let i=0;i<=10;i++){
-  const t=i/10,z=stairZ0+(stairZ1-stairZ0)*t,top=stairRise*(1-t);
+  const t=i/10,z=stairZ0+(stairZ1-stairZ0)*t,top=3.88-(3.88-.12)*t;
   box(x,top+.52,z,.105,1.04,.105,trim);
  }
 }
-slopedRail(-2.38);slopedRail(2.38);
+slopedRail(-2.53);slopedRail(2.53);
 // Small entry posts distinguish the top and bottom landings.
-for(const z of [stairZ0,stairZ1])for(const x of [-2.38,2.38]){
+for(const z of [stairZ0,stairZ1])for(const x of [-2.53,2.53]){
  const y=z===stairZ0?4.28:.55;
  box(x,y,z,.25,1.1,.25,wood);
  box(x,y+.59,z,.36,.14,.36,gold);
@@ -162,7 +173,7 @@ for(let z=-25;z<=25;z+=10){box(0,10.5,z,54,.28,.3,wood);
   for(let x of [-17,0,17]){let lamp=new THREE.PointLight(0xffd29a,32,19,2);lamp.position.set(x,9.6,z);scene.add(lamp);
     box(x,9.9,z,.5,.4,.5,gold)}}
 // Every series has a distinct, stable color (not merely one color per genre).
-const seriesColor=series=>new THREE.Color().setHSL(((series*0.61803398875)%1),.43+(series%4)*.07,.43+(series%3)*.055);
+const seriesColor=series=>new THREE.Color().setHSL(((series*0.61803398875)%1),.67+(series%4)*.055,.47+(series%3)*.065);
 const shelves=[],shelfGroup=new THREE.Group();scene.add(shelfGroup);
 const baseShelf=new THREE.BoxGeometry(2.18,2.46,.18),shelfMesh=new THREE.InstancedMesh(baseShelf,shelfMat,SHELVES),dummy=new THREE.Object3D();shelfGroup.add(shelfMesh);
 // 200 shelves per floor, 10 columns x 20 rows. Wide longitudinal aisles;
@@ -215,7 +226,7 @@ for(let i=0;i<SHELVES;i++){let s=shelves[i];for(let j=0;j<2;j++){
 }}shelfTrim.instanceMatrix.needsUpdate=true;scene.add(shelfTrim);
 // Shelf frame, five horizontal shelves, and side posts: shared geometry + instancing.
 function addShelfDetail(geo,mat,count,position){const mesh=new THREE.InstancedMesh(geo,mat,count);for(let i=0;i<SHELVES;i++){const sh=shelves[i];for(let j=0;j<count/SHELVES;j++){const [dx,dy,dz]=position(j);dummy.position.set(sh.x+dx,sh.y+dy,sh.z+dz);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();mesh.setMatrixAt(i*(count/SHELVES)+j,dummy.matrix)}}mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
-const shelfOak=new THREE.MeshStandardMaterial({map:oakTexture,roughness:.75}),shelfEdge=material(0xc39b60);
+const shelfOak=new THREE.MeshStandardMaterial({map:oakTexture,roughness:.75}),shelfEdge=material(0xffca71);
 addShelfDetail(new THREE.BoxGeometry(2.3,.09,.78),shelfOak,SHELVES*5,j=>[0,-1.16+j*.58,.19]);
 addShelfDetail(new THREE.BoxGeometry(.11,2.62,.82),shelfOak,SHELVES*2,j=>[j?-1.12:1.12,0,.17]);
 addShelfDetail(new THREE.BoxGeometry(2.33,.045,.83),shelfEdge,SHELVES*3,j=>[0,-1.15+j*1.16,.2]);
@@ -244,7 +255,7 @@ function updateBindingBands(id){const sh=shelves[Math.floor(id/8)],slot=id%8;for
 // 8 procedural illustrated cover themes; per-series cloth tint distinguishes all 384 series.
 const coverTextures=genres.map((genre,g)=>{
  const c=document.createElement('canvas');c.width=128;c.height=192;const ctx=c.getContext('2d');
- const hues=[343,192,17,277,223,39,111,24];ctx.fillStyle=`hsl(${hues[g]},40%,22%)`;ctx.fillRect(0,0,128,192);
+ const hues=[343,192,17,277,223,39,111,24];ctx.fillStyle=`hsl(${hues[g]},68%,29%)`;ctx.fillRect(0,0,128,192);
  ctx.strokeStyle='#d7b575';ctx.lineWidth=5;ctx.strokeRect(9,9,110,174);ctx.lineWidth=1;ctx.strokeRect(15,15,98,162);
  ctx.save();ctx.translate(64,82);ctx.strokeStyle='#f7d995';ctx.fillStyle='#dfbc78';ctx.lineWidth=3;
  if(g===0){ctx.beginPath();ctx.moveTo(-24,-4);ctx.bezierCurveTo(-34,-36,-2,-38,0,-16);ctx.bezierCurveTo(4,-38,36,-32,24,-4);ctx.lineTo(0,23);ctx.closePath();ctx.fill()}
@@ -339,7 +350,7 @@ function animateBookFlights(dt){
 
 const labels=new Map();function sign(text){let c=document.createElement('canvas');c.width=512;c.height=128;let a=c.getContext('2d');a.fillStyle='#261c35';a.fillRect(0,0,512,128);a.strokeStyle='#d7b577';a.lineWidth=7;a.strokeRect(3,3,506,122);a.fillStyle='#ffe2a5';a.font='bold 38px system-ui';a.textAlign='center';a.fillText(text,256,79);return new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true})}
 for(let g=0;g<8;g++){let sprite=new THREE.Sprite(sign(genres[g]));sprite.position.set(-24+g*6.5,3.2,-27);sprite.scale.set(3.5,.85,1);scene.add(sprite)}
-// v0.9.9 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
+// v0.9.11 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
 // Shared geometries and instancing keep the extra GPU cost low on mobile Safari.
 const decorGold=new THREE.MeshStandardMaterial({color:0xb78d52,metalness:.56,roughness:.37});
 const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
@@ -403,7 +414,7 @@ function audioNote(hz,duration=.3,wave='sine',bus='effects',gain=.2,delay=0){if(
 function audioCue(k,n=0){if(k==='pickup'){audioNote(659,.24);audioNote(988,.42,'sine','effects',.13,.07)}else if(k==='shelf'){audioNote(185,.13,'triangle','effects',.14);audioNote(392+n*33,.34,'sine','effects',.2,.08)}else if(k==='complete'){[523,659,784,1047].forEach((f,i)=>audioNote(f,.65,'sine','effects',.19,i*.15))}else if(k==='upgrade'){[392,587,784].forEach((f,i)=>audioNote(f,.43,'triangle','effects',.17,i*.11))}else if(k==='magnet'){audioNote(440,.34,'sine','effects',.07);audioNote(880,.31,'sine','effects',.06,.09)}else if(k==='step'){audioNote(94,.085,'triangle','effects',.055)}else if(k==='key'){audioNote(740,.35);audioNote(1110,.55,'sine','effects',.14,.1)}}
 const fantasyNotes=[261.63,329.63,392,493.88,392,329.63,293.66,392,261.63,349.23,440,523.25,440,349.23,329.63,293.66];
 function audioFrame(t,moving,magnet){if(!audioCtx||audioCtx.state!=='running'||audioPrefs.mute)return;if(t-musicAt>1.25){musicAt=t;let f=fantasyNotes[musicIndex++%fantasyNotes.length];audioNote(f,2,'sine','music',.14);audioNote(f/2,2.5,'triangle','music',.075)}if(moving&&t-footAt>.46){footAt=t;audioCue('step')}if(magnet&&t-magnetAt>2){magnetAt=t;audioCue('magnet')}}
-const audioSettings=document.createElement('div');audioSettings.id='audioSettings';audioSettings.style.cssText='display:none;position:fixed;z-index:30;inset:12% 8% auto;max-width:440px;margin:auto;background:#211831;color:#ffedc3;border:1px solid #caa467;border-radius:14px;padding:17px;box-shadow:0 0 0 100vmax #000a;font:14px system-ui';
+const audioSettings=document.createElement('div');audioSettings.id='audioSettings';audioSettings.style.cssText='display:none;position:fixed;z-index:30;inset:12% 8% auto;max-width:440px;margin:auto;background:#211831;color:#fff1d0;border:1px solid #caa467;border-radius:14px;padding:17px;box-shadow:0 0 0 100vmax #000a;font:14px system-ui';
 audioSettings.innerHTML='<h2>✧ Mystical Fantasy Audio</h2><label><input type="checkbox" id="audioMute"> Mute all</label>'+['music','effects','ambience'].map(k=>'<p><label>'+k.toUpperCase()+' <output id="audioVal_'+k+'"></output>%<input style="display:block;width:100%;margin-top:8px" type="range" min="0" max="100" id="audio_'+k+'"></label></p>').join('')+'<p id="audioStatus">Tap ENABLE AUDIO to start sound</p><button id="audioEnable">▶ ENABLE AUDIO / TEST SOUND</button><button id="audioClose">Done</button>';document.body.appendChild(audioSettings);
 const audioButton=document.createElement('button');audioButton.textContent='🔊 ENABLE AUDIO';audioButton.style.cssText='position:fixed;z-index:25;right:9px;top:calc(82px + env(safe-area-inset-top));padding:7px 10px';document.body.appendChild(audioButton);
 audioButton.onclick=()=>{audioStart();audioSettings.style.display='block';audioStatus();for(const k of ['music','effects','ambience']){document.getElementById('audio_'+k).value=audioPrefs[k];document.getElementById('audioVal_'+k).textContent=audioPrefs[k]}document.getElementById('audioMute').checked=audioPrefs.mute};
@@ -615,7 +626,7 @@ function loop(now){
   const desired=stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE);
   camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*9);
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.9: Sunlit Windows loaded · original gameplay preserved!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.11: Sunlit Windows loaded · original gameplay preserved!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';
