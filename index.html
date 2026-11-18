@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.6</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.7</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#100d1b;color:#f7e9cb;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#342849e8;border:1px solid #bfa36c;color:#ffedc3;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#1b1429d9;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#67502f}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#241c36e8;border:1px solid #bfa36c;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#171225f7;border:1px solid #bfa36c;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#211b32;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #bfa36c;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#30243f;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.6</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.7</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -258,6 +258,52 @@ function animateBookFlights(dt){
 
 const labels=new Map();function sign(text){let c=document.createElement('canvas');c.width=512;c.height=128;let a=c.getContext('2d');a.fillStyle='#261c35';a.fillRect(0,0,512,128);a.strokeStyle='#d7b577';a.lineWidth=7;a.strokeRect(3,3,506,122);a.fillStyle='#ffe2a5';a.font='bold 38px system-ui';a.textAlign='center';a.fillText(text,256,79);return new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true})}
 for(let g=0;g<8;g++){let sprite=new THREE.Sprite(sign(genres[g]));sprite.position.set(-24+g*6.5,3.2,-27);sprite.scale.set(3.5,.85,1);scene.add(sprite)}
+// v0.9.7 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
+// Shared geometries and instancing keep the extra GPU cost low on mobile Safari.
+const decorGold=new THREE.MeshStandardMaterial({color:0xb78d52,metalness:.56,roughness:.37});
+const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
+const decorStone=new THREE.MeshStandardMaterial({color:0x524458,roughness:.91});
+const runeGlow=new THREE.MeshBasicMaterial({color:0x8c78d4,transparent:true,opacity:.67,depthWrite:false});
+function instancedDecor(geo,mat,positions){const mesh=new THREE.InstancedMesh(geo,mat,positions.length);const d=new THREE.Object3D();positions.forEach(([x,y,z,sx=1,sy=1,sz=1],i)=>{d.position.set(x,y,z);d.scale.set(sx,sy,sz);d.updateMatrix();mesh.setMatrixAt(i,d.matrix)});mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
+// Recessed wall columns and illuminated capital plates: outside the navigable aisles.
+const pilasters=[];const capitals=[];
+for(let z=-25;z<=25;z+=5){for(const x of [-27.72,27.72]){pilasters.push([x,5.2,z]);capitals.push([x,9.65,z])}}
+instancedDecor(new THREE.BoxGeometry(.38,9.3,.48),decorStone,pilasters);
+instancedDecor(new THREE.BoxGeometry(.58,.22,.72),decorGold,capitals);
+// Ceiling coffers and ribs suggest an old vaulted archive, without expensive shadows.
+const coffers=[];const ribEnds=[];
+for(let z=-25;z<=25;z+=5){for(let x=-22;x<=22;x+=5.5){coffers.push([x,10.52,z]);ribEnds.push([x,10.37,z])}}
+instancedDecor(new THREE.BoxGeometry(4.8,.045,4.25),decorDark,coffers);
+instancedDecor(new THREE.BoxGeometry(4.9,.06,.08),decorGold,ribEnds);
+// Ornate shelf corner rivets and gilded vertical spine separators, all batched.
+const rivets=[];const insetRails=[];
+for(let i=0;i<SHELVES;i++){const sh=shelves[i];for(const side of [-1,1]){rivets.push([sh.x+side*1.1,sh.y+1.27,sh.z+.62]);insetRails.push([sh.x+side*1.06,sh.y,sh.z+.61])}}
+instancedDecor(new THREE.SphereGeometry(.055,6,4),decorGold,rivets);
+instancedDecor(new THREE.BoxGeometry(.027,2.18,.028),decorGold,insetRails);
+// Eight heraldic banners: canvas art stays legible and requires no downloaded assets.
+const genreSigils=['♥','✦','ϟ','☾','✧','⚗','❧','⌛'];
+const bannerColors=['#743a58','#31656a','#8a422c','#53346e','#344c7b','#82672f','#41603e','#72513e'];
+for(let g=0;g<8;g++){
+ const canvas=document.createElement('canvas');canvas.width=192;canvas.height=320;
+ const ctx=canvas.getContext('2d');ctx.fillStyle=bannerColors[g];ctx.fillRect(0,0,192,320);
+ ctx.strokeStyle='#d9b76d';ctx.lineWidth=9;ctx.strokeRect(10,10,172,300);ctx.lineWidth=2;ctx.strokeRect(22,22,148,276);
+ ctx.fillStyle='#f9e5b2';ctx.textAlign='center';ctx.font='bold 104px Georgia,serif';ctx.fillText(genreSigils[g],96,170);
+ ctx.font='bold 16px Georgia,serif';ctx.fillText(genres[g].toUpperCase().slice(0,17),96,252);
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ const mat=new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.55,2.5),mat);
+ mesh.position.set(-22.8+g*6.5,7.4,-29.77);scene.add(mesh);
+ const tassel=box(mesh.position.x,6.12,-29.72,1.66,.08,.1,decorGold);
+}
+// Arcane floor inlays at the entry, deliberately flat and non-colliding.
+const inlayPositions=[];
+for(let i=0;i<24;i++){const a=i*Math.PI/12;inlayPositions.push([Math.cos(a)*2.3,.044,26+Math.sin(a)*2.3]);}
+instancedDecor(new THREE.BoxGeometry(.23,.008,.06),decorGold,inlayPositions);
+// A small number of distant magical motes, drawn in one instanced batch.
+const motePositions=[];
+for(let i=0;i<96;i++){const k=(i*7919)%997;motePositions.push([-25+(k%101)/100*50,1.3+((i*37)%71)/10,-26+((i*61)%101)/100*52])}
+const archiveMotes=instancedDecor(new THREE.SphereGeometry(.033,5,4),runeGlow,motePositions);
+archiveMotes.frustumCulled=false;
 const keyObjs=[];for(let k=0;k<6;k++){let x=-21+(k%3)*21,z=-18+Math.floor(k/3)*36,mesh=box(x,.28,z,.32,.18,.15,gold);mesh.rotation.z=.4;mesh.visible=!keys.has(k);keyObjs.push({mesh,x,z,k})}
 const chestObjs=[];for(let k=0;k<2;k++){let x=k?20:-20,z=-22,mesh=box(x,4.18,z,1,.75,.7,gold);mesh.visible=!chests.has(k);chestObjs.push({mesh,x,z,k})}
 // The detailed oak staircase above is the only visible stair geometry.
@@ -488,7 +534,7 @@ function loop(now){
   const desired=stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE);
   camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*9);
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.6: Staircase descent fixed · new oak steps!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.7: Graphics Edition loaded · original gameplay preserved!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';
