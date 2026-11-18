@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.15</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.16</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.15</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.16</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -31,7 +31,7 @@ renderer.domElement.addEventListener('touchmove',e=>e.preventDefault(),{passive:
 renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.65,25.8);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
 scene.add(new THREE.HemisphereLight(0xe0ddff,0x24214c,2.15));for(let z of [-20,0,20]){let l=new THREE.PointLight(0x9874ff,120,42);l.position.set(0,5,z);scene.add(l)};
-// v0.9.15: deterministic hand-painted procedural materials; no remote textures.
+// v0.9.16: deterministic hand-painted procedural materials; no remote textures.
 function archiveTexture(kind){
  const c=document.createElement('canvas');c.width=c.height=256;const q=c.getContext('2d');
  let seed=kind==='wood'?119:kind==='stone'?229:331;
@@ -45,9 +45,32 @@ function archiveTexture(kind){
   for(let i=0;i<2500;i++){let v=Math.floor(70+rand()*75);q.fillStyle=`rgba(${v},${v-5},${v+10},${.025+rand()*.09})`;q.fillRect(rand()*256,rand()*256,1+rand()*4,1+rand()*4)}
   q.strokeStyle='rgba(10,8,18,.3)';q.lineWidth=3;for(let y=0;y<256;y+=64){q.beginPath();q.moveTo(0,y);q.lineTo(256,y);q.stroke();let offset=(y/64%2)*64;for(let x=offset;x<256;x+=128){q.beginPath();q.moveTo(x,y);q.lineTo(x,y+64);q.stroke()}}
  }else{
-  q.fillStyle='#513727';q.fillRect(0,0,256,256);
-  for(let y=0;y<256;y+=32){q.fillStyle=y%64?'#65452e':'#765037';q.fillRect(0,y,256,31);q.fillStyle='rgba(19,10,8,.5)';q.fillRect(0,y,256,2);for(let x=0;x<256;x+=128){q.fillRect(x+(y%64?64:0),y,2,32)}}
-  for(let i=0;i<180;i++){q.fillStyle='rgba(236,181,103,.055)';q.fillRect(rand()*256,rand()*256,rand()*30,1)}
+  // Real plank layout with grain, joints, nailheads and restrained color variation.
+  q.fillStyle='#37271f';q.fillRect(0,0,256,256);
+  for(let row=0;row<8;row++){
+   const y=row*32,shift=(row%3)*43;
+   const tones=['#76513a','#825b42','#684631','#906449','#79543e','#6c4936'];
+   q.fillStyle=tones[(row*3+2)%tones.length];q.fillRect(0,y+2,256,29);
+   for(let i=0;i<24;i++){
+    const gy=y+4+rand()*24;
+    q.strokeStyle=rand()>.5?'rgba(32,18,14,.17)':'rgba(232,184,127,.13)';
+    q.lineWidth=.4+rand()*.7;
+    q.beginPath();q.moveTo(0,gy);q.bezierCurveTo(90,gy+rand()*3,175,gy-rand()*3,256,gy+rand()*2);q.stroke();
+   }
+   q.strokeStyle='rgba(24,14,13,.52)';q.lineWidth=2;
+   q.beginPath();q.moveTo(0,y+1);q.lineTo(256,y+1);q.stroke();
+   for(let x=shift;x<256;x+=128){
+    q.fillStyle='rgba(19,13,12,.55)';q.fillRect(x,y+2,2,28);
+    for(const ny of [y+6,y+26]){
+     q.fillStyle='rgba(21,18,16,.5)';q.beginPath();q.arc(x+6,ny,1.1,0,Math.PI*2);q.fill();
+    }
+   }
+  }
+  for(let k=0;k<7;k++){
+   const x=rand()*256,y=rand()*256;
+   q.strokeStyle='rgba(35,21,16,.23)';q.lineWidth=.9;
+   q.beginPath();q.ellipse(x,y,3+rand()*7,1.1+rand()*1.4,0,0,Math.PI*2);q.stroke();
+  }
  }
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=2;return t;
 }
@@ -56,7 +79,7 @@ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=m
 function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
 box(0,-.18,0,56,.3,60,stone);box(0,10.8,0,56,.25,60,stone);for(let x of [-28,28])box(x,5.4,0,.3,10.8,60,stone);for(let z of [-30,30])box(0,5.4,z,56,10.8,.3,stone);
 
-// v0.9.15 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
+// v0.9.16 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
 // Decorative wall panels do not change collision geometry, stairs or interaction rays.
 const daylightGlass=new THREE.MeshBasicMaterial({color:0x7fe9ff,transparent:true,opacity:.86,depthWrite:false,side:THREE.DoubleSide});
 const daylightCore=new THREE.MeshBasicMaterial({color:0xfff1c5,transparent:true,opacity:.40,depthWrite:false,side:THREE.DoubleSide});
@@ -108,27 +131,35 @@ sunlight.position.set(-18,16,-8);scene.add(sunlight);
 
 // Solid second-storey floor with a dedicated central stairwell opening.
 // The earlier four perimeter strips left a huge uncovered void above the ground floor.
-const floorWood=new THREE.MeshStandardMaterial({map:floorTexture,roughness:.82}),trim=material(0xffc86b),plank=material(0x7255a6);
-// Upper deck: four opaque slabs surrounding a 5.6 x 14.5 stair opening (z 8.5..23).
-box(-15.4,3.70,0,25.2,.34,56,floorWood);
-box(15.4,3.70,0,25.2,.34,56,floorWood);
-box(0,3.70,-9.75,5.6,.34,36.5,floorWood);
-box(0,3.70,25.5,5.6,.34,5,floorWood);
-// Solid ground-floor timber finish over the original stone foundation.
-box(0,-.012,0,55,.08,58,floorWood);
-// Subtle plank seams on both floors; shallow enough not to obstruct movement.
-const seam=material(0x31214d);
-for(let z=-27;z<=27;z+=3){box(0,.033,z,54.5,.006,.035,seam);
-  if(z<8.5||z>23)box(0,3.88,z,54.5,.006,.035,seam);
-  else {box(-15.4,3.88,z,25,.006,.035,seam);box(15.4,3.88,z,25,.006,.035,seam)}
+// v0.9.16 flooring: scale the wood texture by actual world dimensions.
+// Geometry remains identical so stairs, collisions and shelf positions are untouched.
+const trim=material(0xffc86b),plank=material(0x7255a6);
+function floorPanel(x,y,z,w,h,d){
+ const tex=floorTexture.clone();tex.needsUpdate=true;
+ tex.repeat.set(Math.max(1,w/4),Math.max(1,d/4));
+ const mat=new THREE.MeshStandardMaterial({map:tex,roughness:.87,metalness:0});
+ return box(x,y,z,w,h,d,mat);
 }
-// Geometric parquet inlay: batched thin lines sit flush with the timber.
-const parquetLine=material(0x8b6cce),parquetBorder=material(0xf3bc69);
-for(let z=-26;z<=26;z+=2.6){for(const x of [-24,-18,-12,-6,6,12,18,24]){
- box(x,.034,z,3.4,.008,.024,parquetLine);
- if(z<8.5||z>23||Math.abs(x)>3)box(x,3.881,z,3.4,.007,.024,parquetLine);
-}}
-for(const x of [-25,25]){box(x,.038,0,.055,.012,55,parquetBorder);box(x,3.885,0,.055,.01,55,parquetBorder)}
+floorPanel(-15.4,3.70,0,25.2,.34,56);
+floorPanel(15.4,3.70,0,25.2,.34,56);
+floorPanel(0,3.70,-9.75,5.6,.34,36.5);
+floorPanel(0,3.70,25.5,5.6,.34,5);
+floorPanel(0,-.012,0,55,.08,58);
+// Flush geometric stone-and-brass threshold inlays at four open entry bays.
+const stoneTile=new THREE.MeshStandardMaterial({map:masonryTexture,color:0x9696a4,roughness:.96});
+const brassStrip=new THREE.MeshStandardMaterial({color:0xd6a95f,metalness:.45,roughness:.43});
+for(const level of [0,1]){
+ const y=level?3.884:.033;
+ for(const z of [-24,24]){
+  // Flat and purely decorative: no new collision geometry.
+  const mat=new THREE.Mesh(new THREE.PlaneGeometry(4.6,1.15),stoneTile);
+  mat.rotation.x=-Math.PI/2;mat.position.set(0,y,z);scene.add(mat);
+  for(const dz of [-.61,.61]){
+   const line=new THREE.Mesh(new THREE.PlaneGeometry(4.75,.045),brassStrip);
+   line.rotation.x=-Math.PI/2;line.position.set(0,y+.008,z+dz);scene.add(line);
+  }
+ }
+}
 // Gold railing around the stair opening, with a gap at the bottom landing.
 for(const x of [-2.85,2.85]){box(x,4.48,15.75,.12,.12,14.5,trim);
   for(let z=9;z<23;z+=2.2)box(x,4.16,z,.1,.62,.1,trim)}
@@ -287,7 +318,7 @@ const coverTextures=genres.map((genre,g)=>{
  ctx.restore();ctx.fillStyle='#f4dfb1';ctx.textAlign='center';ctx.font='bold 11px Georgia,serif';ctx.fillText(genre.toUpperCase().slice(0,17),64,149);ctx.font='9px Georgia,serif';ctx.fillText('ARCANE ARCHIVES',64,167);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=2;return t;
 });
-// v0.9.15: a unified hardback book, with geometry-local parts sharing ONE world transform.
+// v0.9.16: a unified hardback book, with geometry-local parts sharing ONE world transform.
 // This prevents page blocks and bindings drifting apart as the book rotates.
 const coverGeometry=new THREE.BoxGeometry(.385,.025,.51);
 coverGeometry.translate(0,.075,0);
@@ -402,7 +433,7 @@ function animateBookFlights(dt){
 
 const labels=new Map();function sign(text){let c=document.createElement('canvas');c.width=512;c.height=128;let a=c.getContext('2d');a.fillStyle='#261c35';a.fillRect(0,0,512,128);a.strokeStyle='#d7b577';a.lineWidth=7;a.strokeRect(3,3,506,122);a.fillStyle='#ffe2a5';a.font='bold 38px system-ui';a.textAlign='center';a.fillText(text,256,79);return new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true})}
 for(let g=0;g<8;g++){let sprite=new THREE.Sprite(sign(genres[g]));sprite.position.set(-24+g*6.5,3.2,-27);sprite.scale.set(3.5,.85,1);scene.add(sprite)}
-// v0.9.15 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
+// v0.9.16 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
 // Shared geometries and instancing keep the extra GPU cost low on mobile Safari.
 const decorGold=new THREE.MeshStandardMaterial({color:0xb78d52,metalness:.56,roughness:.37});
 const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
@@ -682,7 +713,7 @@ function loop(now){
   const desired=stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE);
   camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*9);
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.15: Diagonal stair approach improved!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.16: Diagonal stair approach improved!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';
