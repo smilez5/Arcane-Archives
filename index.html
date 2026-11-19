@@ -1,6 +1,6 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.24</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.25</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.24</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.25</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -31,7 +31,7 @@ renderer.domElement.addEventListener('touchmove',e=>e.preventDefault(),{passive:
 renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.65,18.0);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
 scene.add(new THREE.HemisphereLight(0xe0ddff,0x24214c,2.15));for(let z of [-20,0,20]){let l=new THREE.PointLight(0x9874ff,120,42);l.position.set(0,5,z);scene.add(l)};
-// v0.9.24: deterministic hand-painted procedural materials; no remote textures.
+// v0.9.25: deterministic hand-painted procedural materials; no remote textures.
 function archiveTexture(kind){
  const c=document.createElement('canvas');c.width=c.height=256;const q=c.getContext('2d');
  let seed=kind==='wood'?119:kind==='stone'?229:331;
@@ -79,7 +79,7 @@ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=m
 function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
 box(0,-.18,0,56,.3,60,stone);for(let x of [-28,28])box(x,5.4,0,.3,10.8,60,stone);for(let z of [-30,30])box(0,5.4,z,56,10.8,.3,stone);
 
-// v0.9.24 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
+// v0.9.25 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
 // Decorative wall panels do not change collision geometry, stairs or interaction rays.
 const daylightGlass=new THREE.MeshBasicMaterial({color:0x7fe9ff,transparent:true,opacity:.86,depthWrite:false,side:THREE.DoubleSide});
 const daylightCore=new THREE.MeshBasicMaterial({color:0xfff1c5,transparent:true,opacity:.40,depthWrite:false,side:THREE.DoubleSide});
@@ -154,6 +154,7 @@ for(const side of [-1,1]){
   const t=i/STAIR_STEPS,z=STAIR_START-(STAIR_START-STAIR_END)*(i+.5)/STAIR_STEPS;
   const h=.18+3.70*t;
   box(x,h-.065,z,3.2,.13,(STAIR_START-STAIR_END)/STAIR_STEPS+.015,stairOak);
+  box(x,(h-.13)/2,z,3.05,Math.max(.12,h-.13),.12,railWood);
   box(x,h+.009,z-.23,3.2,.025,.05,railGold);
  }
  for(const offset of [-1.75,1.75]){
@@ -162,6 +163,8 @@ for(const side of [-1,1]){
   r.position.copy(a).add(b).multiplyScalar(.5);r.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());scene.add(r);
  }
 }
+// Flush upper landings connect the final stair tread to the perimeter gallery.
+for(const side of [-1,1]){const x=side*16.8;floorPanel(x,3.70,4.9,5.9,.34,3.5);box(x,3.48,5.1,3.4,.52,2.5,railWood);}
 // Climbable ladders at front and rear of the hall.
 for(const z of [-22.7,22.7]){
  for(const x of [-.55,.55])box(x,2.02,z,.11,4.1,.13,railWood);
@@ -184,7 +187,7 @@ for(const level of [0,3.88])for(const z of [-21,-9,3,15])for(const x of [-25.8,2
  const arch=new THREE.Mesh(new THREE.TorusGeometry(1.1,.09,6,20,Math.PI),archMat);arch.position.set(x,level+3.05,z);arch.rotation.y=Math.PI/2;scene.add(arch);
 }
 const rugColors=[0xa74682,0x248e9a,0xb34337,0x7845ac,0x315bc5,0xb78a35,0x36865d,0x86664e];
-for(let g=0;g<8;g++){const x=[-23,-18,-13,-8,8,13,18,23][g];for(const level of [0,1]){
+for(let g=0;g<0;g++){const x=[-23,-18,-13,-8,8,13,18,23][g];for(const level of [0,1]){
  const rug=new THREE.Mesh(new THREE.PlaneGeometry(1.45,45),new THREE.MeshStandardMaterial({color:rugColors[g],roughness:.96,side:THREE.DoubleSide}));rug.rotation.x=-Math.PI/2;rug.position.set(x,level?3.907:.055,0);scene.add(rug);
 }}
 // Every series has a distinct, stable color (not merely one color per genre).
@@ -252,7 +255,7 @@ addShelfDetail(new THREE.BoxGeometry(2.3,.09,.78),shelfOak,SHELVES*5,j=>[0,-1.16
 addShelfDetail(new THREE.BoxGeometry(.11,2.62,.82),shelfOak,SHELVES*2,j=>[j?-1.12:1.12,0,.17]);
 addShelfDetail(new THREE.BoxGeometry(2.33,.045,.83),shelfEdge,SHELVES*3,j=>[0,-1.15+j*1.16,.2]);
 addShelfDetail(new THREE.BoxGeometry(.11,.18,.86),gold,SHELVES*2,j=>[j?-1.13:1.13,1.27,.18]);
-// v0.9.24: curved hardwood mouldings and recessed case construction.
+// v0.9.25: curved hardwood mouldings and recessed case construction.
 // All additions are decorative InstancedMeshes, not targets or collision obstacles.
 // The backing has been moved rearward so books sit visibly inside the frame.
 const walnut=new THREE.MeshStandardMaterial({map:oakTexture,color:0x9b795f,roughness:.81});
@@ -341,7 +344,7 @@ const coverTextures=genres.map((genre,g)=>{
  ctx.restore();ctx.fillStyle='#f4dfb1';ctx.textAlign='center';ctx.font='bold 11px Georgia,serif';ctx.fillText(genre.toUpperCase().slice(0,17),64,149);ctx.font='9px Georgia,serif';ctx.fillText('ARCANE ARCHIVES',64,167);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=2;return t;
 });
-// v0.9.24: a unified hardback book, with geometry-local parts sharing ONE world transform.
+// v0.9.25: a unified hardback book, with geometry-local parts sharing ONE world transform.
 // This prevents page blocks and bindings drifting apart as the book rotates.
 const coverGeometry=new THREE.BoxGeometry(.385,.025,.51);
 coverGeometry.translate(0,.075,0);
@@ -372,7 +375,7 @@ for(const mesh of [looseMesh,loosePages,looseBindings,looseBackCovers,loosePageE
  mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);
 }
 const looseCovers=coverMats.map(m=>{const mesh=new THREE.InstancedMesh(coverGeometry,m,TOTAL);mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);return mesh});
-// v0.9.24: collision-aware book scattering. No two loose hardbacks share a footprint.
+// v0.9.25: collision-aware book scattering. No two loose hardbacks share a footprint.
 // Fixed, seeded layout preserves book locations between refreshes without rewriting saves.
 const BOOK_CLEARANCE=.66,BOOK_CELL=.74;
 const scatterNoise=(a,b)=>{let n=(Math.imul(a+731,374761393)^Math.imul(b+911,668265263))>>>0;n=Math.imul(n^(n>>>13),1274126177)>>>0;return ((n^(n>>>16))>>>0)/4294967295};
@@ -509,7 +512,7 @@ function animateBookFlights(dt){
 
 const labels=new Map();function sign(text){let c=document.createElement('canvas');c.width=512;c.height=128;let a=c.getContext('2d');a.fillStyle='#261c35';a.fillRect(0,0,512,128);a.strokeStyle='#d7b577';a.lineWidth=7;a.strokeRect(3,3,506,122);a.fillStyle='#ffe2a5';a.font='bold 38px system-ui';a.textAlign='center';a.fillText(text,256,79);return new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true})}
 for(let g=0;g<8;g++){let sprite=new THREE.Sprite(sign(genres[g]));sprite.position.set(-24+g*6.5,3.2,-27);sprite.scale.set(3.5,.85,1);scene.add(sprite)}
-// v0.9.24 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
+// v0.9.25 GRAPHICS EDITION: all decorations are visual only; no changes to movement, raycasting, saves, or audio.
 // Shared geometries and instancing keep the extra GPU cost low on mobile Safari.
 const decorGold=new THREE.MeshStandardMaterial({color:0xb78d52,metalness:.56,roughness:.37});
 const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
@@ -644,7 +647,7 @@ function tierCost(k){const r=k==='satchel'?satchelRank():k==='magnet'?magnetRank
 function xpAvailable(){return Math.max(0,xp-xpSpent)}
 function levelNow(){return 1+Math.floor(xp/100)}
 function floorNow(){return camera.position.y>3?1:0}function updateHUD(){let count=placed.size;$('progress').textContent=`${count} / ${TOTAL}`;$('rows').textContent=Array.from({length:SERIES},(_,i)=>i).filter(i=>{for(let j=0;j<8;j++)if(!placed.has(i*8+j))return false;return true}).length;$('carry').textContent=`Satchel: ${inventory.length} / ${satchelLimit()}`;$('xp').textContent=`${xpAvailable()} / ${xp} · Lv${levelNow()}`;$('points').textContent=points;$('objective').textContent=count===TOTAL?'The archive is restored!':'Restore the series · Spend XP in MAGIC';if(waypoint!==null&&xpPerks.compass){const sh=shelves[waypoint],dist=Math.hypot(sh.x-camera.position.x,sh.z-camera.position.z),a=Math.atan2(sh.x-camera.position.x,-(sh.z-camera.position.z))-yaw;const direction=['↑','↗','→','↘','↓','↙','←','↖'][((Math.round(((a%(Math.PI*2))+(Math.PI*2))%(Math.PI*2)/(Math.PI/4)))%8)];$('objective').textContent=`🧭 ${direction} Shelf ${waypoint+1} · ${dist.toFixed(1)}m · Floor ${sh.floor+1}`;}let t=target();setAimHighlight(t);$('hint').textContent=t?.type==='book'?`📕 ${details(t.id)}`:t?.type==='shelf'?`📚 Shelf #${t.id+1} · ${t.id<SERIES?`${title(t.id*8)} · ${genres[catalog[t.id*8].genre]} · ${Array.from({length:8},(_,v)=>placed.has(t.id*8+v)?1:0).reduce((a,b)=>a+b,0)}/8 books`:'Reserve shelf · 0/0 books'}`:t?.type==='key'?'✨ Hidden key':t?.type==='chest'?`🎁 Chest ${t.id+1}: ${t.id===0?'Sprint (3 keys)':'Mega-jump (6 keys)'}`:'Aim directly at a book or shelf';$('act').textContent=t?.type==='book'?'PICK UP':t?.type==='shelf'?'PLACE BOOK':t?.type==='key'?'TAKE KEY':t?.type==='chest'?'OPEN CHEST':'INTERACT'}
-// v0.9.24: reference-inspired fairy portrait with transparent background, embedded offline.
+// v0.9.25: reference-inspired fairy portrait with transparent background, embedded offline.
 // Uses a camera-facing character plane rather than blocky primitive anatomy.
 const fairyRoot=new THREE.Group();camera.add(fairyRoot);scene.add(camera);fairyRoot.visible=false;
 const fairySkin=new THREE.MeshStandardMaterial({color:0xf5bfa8,roughness:.78});
@@ -801,7 +804,7 @@ function animateFairy(now){
 }
 function awardRow(){audioCue('complete');xp+=25;points+=1;toast('✨ Series complete! +25 XP · +1 skill point')}
 function placeBook(id,shelfId){if(shelfId>=SERIES||catalog[id].series!==shelfId){triggerFairy();return false}let expected=catalog[id].series*8+catalog[id].vol-1;if(id!==expected)return false;if(placed.has(id)){toast('That volume is already shelved.');return false}const sh=shelves[shelfId];flyBook(id,'shelf',{x:camera.position.x,y:camera.position.y-.32,z:camera.position.z});placed.add(id);inventory.splice(inventory.indexOf(id),1);spineMesh.setColorAt(id,seriesColor(catalog[id].series));spineMesh.instanceColor.needsUpdate=true;updateBindingBands(id);const shelfCount=Array.from({length:8},(_,v)=>placed.has(shelfId*8+v)).filter(Boolean).length;const gainedXP=shelfCount*2;audioCue('shelf',shelfCount);xp+=gainedXP;if(shelfCount===8){awardRow();toast(`Shelved ${name(id)} · 8/8 · +${gainedXP} XP · Series complete!`)}else toast(`Shelved ${name(id)} · ${shelfCount}/8 · +${gainedXP} XP`);save();return true}
-function interact(){if($('panel').style.display==='block')return;let t=target();if(!t){toast('Move closer and aim at an object');return}if(t.type==='book'){if(inventory.length>=satchelLimit()){toast('Satchel full');return}audioCue('pickup');flyBook(t.id,'pickup',{x:t.obj.x,y:.16+(t.id%3)*.06,z:t.obj.z});inventory.push(t.id);delete dropped[t.id];save();refreshLoose();toast(`Picked up ${name(t.id)}`)}else if(t.type==='shelf'){let match=inventory.filter(id=>catalog[id].series===t.id).sort((a,b)=>a-b);if(!match.length){if(inventory.length)triggerFairy();else toast('Your satchel is empty');return}let done=0;for(let id of match)if(placeBook(id,t.id))done++;if(done)refreshLoose()}else if(t.type==='key'){audioCue('key');keys.add(t.id);t.obj.mesh.visible=false;save();toast(`Hidden key found! ${keys.size}/6`)}else if(t.type==='chest'){if(keys.size<3+t.id*3){toast(`Need ${3+t.id*3} hidden keys to open this chest`);return}chests.add(t.id);t.obj.mesh.visible=false;save();toast(t.id===0?'Sprint unlocked! Movement speed increased.':'Mega-jump chest opened! Jump controls are planned for a later update.') }updateHUD()}
+function interact(){if($('panel').style.display==='block')return;let t=target();if(!t){toast('Move closer and aim at an object');return}if(t.type==='book'){if(inventory.length>=satchelLimit()){toast('Satchel full');return}audioCue('pickup');flyBook(t.id,'pickup',{x:t.obj.x,y:.16+(t.id%3)*.06,z:t.obj.z});inventory.push(t.id);delete dropped[t.id];save();refreshLoose();toast(`Picked up ${name(t.id)}`)}else if(t.type==='shelf'){let match=inventory.filter(id=>catalog[id].series===t.id).sort((a,b)=>a-b);if(!match.length){if(inventory.length)triggerFairy();else toast('Your satchel is empty');return}let done=0;for(let id of match)if(placeBook(id,t.id))done++;if(done)refreshLoose()}else if(t.type==='key'){audioCue('key');keys.add(t.id);t.obj.mesh.visible=false;save();toast(`Hidden key found! ${keys.size}/6`)}else if(t.type==='chest'){if(keys.size<3+t.id*3){toast(`Need ${3+t.id*3} hidden keys to open this chest`);return}chests.add(t.id);t.obj.mesh.visible=false;save();toast(t.id===0?'Sprint unlocked! Movement speed increased.':'Mega-jump chest opened! Jump is now available.') }updateHUD()}
 $('act').onclick=interact;function panel(title,html){$('panelTitle').textContent=title;$('content').innerHTML=html;$('panel').style.display='block';resetJoy();lookId=null}function close(){ $('panel').style.display='none'}$('close').onclick=close;
 function dropBook(id){if(!inventory.includes(id))return;let forwardX=-Math.sin(yaw),forwardZ=-Math.cos(yaw);let x=Math.max(-25.5,Math.min(25.5,camera.position.x+forwardX*1.4)),z=Math.max(-27.5,Math.min(27.5,camera.position.z+forwardZ*1.4));const safe=findSafeDrop(x,z,id);if(!safe){toast('No clear space to drop that book here');return}dropped[id]=safe;inventory.splice(inventory.indexOf(id),1);active=0;save();refreshLoose();toast('Dropped '+name(id));openSatchel()}
 let satchelView='series';
@@ -890,8 +893,9 @@ function mapView(){
  };
 }
 $('map').onclick=()=>{mapFloor=floorNow();mapView()};
-$('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 3,072 books across this two-story archive. Restore all 384 eight-volume series on 400 shelves.</p><p><b>Controls:</b> Left thumb joystick to move; right thumb drag to look. Both work simultaneously. Tap PICK UP or PLACE BOOK. Desktop: WASD + mouse drag + E.</p><p><b>Sorting:</b> Pick up to 10 books. Each book has a genre, series and volume (1–8). Find its numbered shelf and place volumes in any order. A complete series earns a skill point.</p><p><b>Keys:</b> Find 6 keys. The upstairs first chest opens with 3 keys and unlocks sprint. The second opens with all 6 and awards mega-jump access (jump physics not yet implemented).</p><p><b>Shelf Sight:</b> Spend 1 skill point in MAGIC to reveal nearby shelf numbers above bookcases. Spend 2 more to extend visibility.</p><p><b>Dropping:</b> Open SATCHEL and tap DROP BOOK. Books remain on the floor and can be recovered.</p><p><b>Progress:</b> Saved on this browser/device. v0.9.6 improves two-way staircase travel and retains precise crosshair targeting and shelf progress to the improved library layout; it remains a foundation build; decoration and navigation remain under development.</p><button id="restart">Reset all progress</button>`);const resetButton=$('content').querySelector('#restart');if(resetButton)resetButton.onclick=()=>{if(confirm('Erase all v0.7 progress?')){localStorage.removeItem(storage);location.reload()}}};
-let stairTravel=false,upperLevel=false,ladderTravel=false;
+$('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 3,072 books across this two-story archive. Restore all 384 eight-volume series on 400 shelves.</p><p><b>Controls:</b> Left thumb joystick to move; right thumb drag to look. Both work simultaneously. Tap PICK UP or PLACE BOOK. Desktop: WASD + mouse drag + E, Space to jump. Mobile: tap JUMP to hop or vault the balcony railing.</p><p><b>Sorting:</b> Pick up to 10 books. Each book has a genre, series and volume (1–8). Find its numbered shelf and place volumes in any order. A complete series earns a skill point.</p><p><b>Keys:</b> Find 6 keys. The upstairs first chest opens with 3 keys and unlocks sprint. The second opens with all 6 and awards mega-jump access (jump physics not yet implemented).</p><p><b>Shelf Sight:</b> Spend 1 skill point in MAGIC to reveal nearby shelf numbers above bookcases. Spend 2 more to extend visibility.</p><p><b>Dropping:</b> Open SATCHEL and tap DROP BOOK. Books remain on the floor and can be recovered.</p><p><b>Progress:</b> Saved on this browser/device. v0.9.6 improves two-way staircase travel and retains precise crosshair targeting and shelf progress to the improved library layout; it remains a foundation build; decoration and navigation remain under development.</p><button id="restart">Reset all progress</button>`);const resetButton=$('content').querySelector('#restart');if(resetButton)resetButton.onclick=()=>{if(confirm('Erase all v0.7 progress?')){localStorage.removeItem(storage);location.reload()}}};
+let stairTravel=false,upperLevel=false,ladderTravel=false,jumpVelocity=0,jumpOffset=0,jumpQueued=false,fallingFromBalcony=false;
+const jumpButton=document.createElement("button");jumpButton.id="jump";jumpButton.textContent="JUMP";jumpButton.style.cssText="position:fixed;right:12px;bottom:calc(235px + env(safe-area-inset-bottom));z-index:4;background:#66448c;border:1px solid #f1bf66;border-radius:28px;padding:14px 17px;touch-action:manipulation";document.body.appendChild(jumpButton);jumpButton.addEventListener("pointerdown",e=>{e.preventDefault();jumpQueued=true});window.addEventListener("keydown",e=>{if(e.code==="Space"&&!e.repeat){e.preventDefault();jumpQueued=true}});
 const GROUND_EYE=1.65,UPPER_EYE=5.35;
 const STAIR_TOP=6.2,STAIR_BOTTOM=19.0;
 function stairHeight(z){return GROUND_EYE+(UPPER_EYE-GROUND_EYE)*Math.max(0,Math.min(1,(STAIR_BOTTOM-z)/(STAIR_BOTTOM-STAIR_TOP)))}
@@ -911,8 +915,8 @@ function loop(now){
   function can(a,b){
    if(Math.abs(a)>25.9||Math.abs(b)>26.1)return false;
    const onStairs=Math.abs(Math.abs(a)-16.8)<1.9&&b>5.8&&b<19.5;
-   if(upperLevel&&!stairTravel&&!ladderTravel&&Math.abs(a)<19.6&&Math.abs(b)<22.8&&!onStairs)return false;
-   if(stairTravel&&!onStairs)return false;
+   if(upperLevel&&!stairTravel&&!ladderTravel&&!fallingFromBalcony&&Math.abs(a)<19.6&&Math.abs(b)<22.8&&!onStairs){if(jumpOffset>.48&&jumpVelocity!==0){fallingFromBalcony=true;}else return false;}
+   if(stairTravel&&!onStairs&&Math.abs(b-STAIR_TOP)>.75)return false;
    // Wall shelving collision, while allowing approach to shelf faces.
    for(const sh of shelves){if(sh.floor!==Number(upperLevel))continue;
     if(Math.hypot(a-sh.x,b-sh.z)<.65)return false;
@@ -924,9 +928,9 @@ function loop(now){
   if(can(camera.position.x,nz))camera.position.z=nz;
   const stairSide=Math.abs(Math.abs(camera.position.x)-16.8)<1.85;
   const onStairs=stairSide&&camera.position.z>=STAIR_TOP&&camera.position.z<=STAIR_BOTTOM;
-  if(!stairTravel&&onStairs&&((!upperLevel&&oldZ>=STAIR_BOTTOM-.3&&dz<0)||(upperLevel&&oldZ<=STAIR_TOP+.3&&dz>0)))stairTravel=true;
+  if(!stairTravel&&onStairs&&((!upperLevel&&dz<0)||(upperLevel&&dz>0)))stairTravel=true;
   if(stairTravel){
-   if(camera.position.z<=STAIR_TOP+.12){stairTravel=false;upperLevel=true}
+   if(camera.position.z<=STAIR_TOP+.3){stairTravel=false;upperLevel=true;camera.position.z=STAIR_TOP-.35}
    if(camera.position.z>=STAIR_BOTTOM-.12){stairTravel=false;upperLevel=false}
   }
   // Front and rear ladders: walk up to a ladder and hold forward to climb;
@@ -936,11 +940,14 @@ function loop(now){
    if(!upperLevel&&z>0){ladderTravel=true;upperLevel=true;toast('Climbed to the balcony')}
    else if(upperLevel&&z<0){ladderTravel=true;upperLevel=false;toast('Descended to the hall')}
   }
-  const desired=stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE);
-  camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*9);
+  if(jumpQueued&&jumpOffset<=.001&&!fallingFromBalcony){jumpVelocity=5.2;jumpOffset=.01;}jumpQueued=false;
+  if(jumpOffset>0||jumpVelocity>0){jumpVelocity-=13.5*dt;jumpOffset=Math.max(0,jumpOffset+jumpVelocity*dt);if(jumpOffset===0)jumpVelocity=0;}
+  if(fallingFromBalcony){upperLevel=false;stairTravel=false;ladderTravel=false;jumpVelocity=Math.min(jumpVelocity,-.1);jumpOffset=Math.max(0,jumpOffset+(jumpVelocity-=12*dt)*dt);if(jumpOffset===0)fallingFromBalcony=false;}
+  const desired=(stairTravel?stairHeight(camera.position.z):(upperLevel?UPPER_EYE:GROUND_EYE))+jumpOffset;
+  camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*12);
   if(Math.abs(camera.position.y-desired)<.05)ladderTravel=false;
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.24: Grand Library loaded!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.25: Grand Library loaded!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';
