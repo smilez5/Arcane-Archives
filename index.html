@@ -1,14 +1,14 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.36</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.37</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
 
-/* v0.9.36 thumb zones: menus above left joystick; action and jump on right */
+/* v0.9.37 thumb zones: menus above left joystick; action and jump on right */
 #buttons{left:12px;right:auto;bottom:calc(144px + env(safe-area-inset-bottom));width:188px;max-width:calc(50vw - 15px);grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;z-index:5}
 #buttons button{padding:9px 4px;font-size:11px;min-width:0}
 #act{position:fixed;left:auto;right:10px;bottom:calc(76px + env(safe-area-inset-bottom));width:165px;max-width:38vw;grid-column:auto;padding:12px 4px!important;z-index:5}
 #jump{position:fixed!important;right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:110px;min-height:52px;z-index:6}
 @media(orientation:portrait){#buttons{left:9px;bottom:calc(203px + env(safe-area-inset-bottom));width:155px;max-width:47vw}#buttons button{font-size:10px;padding:8px 2px}#act{right:9px;bottom:calc(84px + env(safe-area-inset-bottom));width:138px;max-width:43vw}#jump{bottom:calc(20px + env(safe-area-inset-bottom))!important}}
 @media(max-height:450px){#buttons{bottom:calc(132px + env(safe-area-inset-bottom))}#act{bottom:calc(72px + env(safe-area-inset-bottom))}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.36</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 3072</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.37</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -27,10 +27,19 @@ for(const url of [
 }
 if(!THREE)throw new Error('3D engine could not load. Check internet access and Safari content blockers. '+String(loadingError?.message||''));
 statusBox.textContent='Building the Grand Library…';
-const $=id=>document.getElementById(id), TOTAL=3072, SHELVES=400, SERIES=384, genres=['Romance','Monsterology','Destructive Magic','Necromancy','Astronomy','Alchemy','Botany','Chronicles'];
-// Exactly 384 series of 8 volumes = 3072 unique catalog records; 400 shelf slots, 16 reserve shelves.
-const catalog=Array.from({length:TOTAL},(_,id)=>({id,series:Math.floor(id/8),vol:id%8+1,genre:Math.floor(id/8)%8}));
-const storage='arcane_archives_v07';let saved={};try{saved=JSON.parse(localStorage.getItem(storage)||'{}')}catch{};
+const $=id=>document.getElementById(id), TOTAL=12800, SHELVES=400, SERIES=400, VOLUMES=32, genres=['Romance','Monsterology','Destructive Magic','Necromancy','Astronomy','Alchemy','Botany','Chronicles'];
+// Exactly 400 series of 32 volumes = 12,800 unique books, one series per shelf.
+const catalog=Array.from({length:TOTAL},(_,id)=>({id,series:Math.floor(id/VOLUMES),vol:id%VOLUMES+1,genre:Math.floor(id/VOLUMES)%8}));
+const storage='arcane_archives_v0937';let saved={};try{saved=JSON.parse(localStorage.getItem('arcane_archives_v07')||'{}')}catch{};
+// One-time migration from the 8-volume catalog. Keep the original save as a backup.
+const expandedStorage=storage;
+let expandedSave=null;try{expandedSave=JSON.parse(localStorage.getItem(expandedStorage)||'null')}catch{}
+const oldToNew=id=>Math.floor(id/8)*VOLUMES+(id%8);
+if(expandedSave){saved=expandedSave}else{
+ const migrateIds=ids=>(ids||[]).filter(id=>Number.isInteger(id)&&id>=0&&id<3072).map(oldToNew);
+ const migratedDrops={};for(const [id,pos] of Object.entries(saved.dropped||{})){const n=Number(id);if(Number.isInteger(n)&&n>=0&&n<3072)migratedDrops[oldToNew(n)]=pos}
+ saved={...saved,placed:migrateIds(saved.placed),inventory:migrateIds(saved.inventory),dropped:migratedDrops};
+}
 let placed=new Set((saved.placed||[]).filter(x=>Number.isInteger(x)&&x>=0&&x<TOTAL)),inventory=(saved.inventory||[]).filter(x=>Number.isInteger(x)&&x>=0&&x<TOTAL&&!placed.has(x)).slice(0,50),skill=saved.skill||{highlight:0,sort:0,assemble:0},xp=Number(saved.xp)||0,points=Number(saved.points)||0,keys=new Set(saved.keys||[]),chests=new Set(saved.chests||[]),active=0,dropped=saved.dropped||{},xpSpent=Math.max(0,Number(saved.xpSpent)||0),xpPerks=saved.xpPerks||{},waypoint=null;
 const save=()=>{try{localStorage.setItem(storage,JSON.stringify({placed:[...placed],inventory,skill,xp,xpSpent,xpPerks,points,keys:[...keys],chests:[...chests],dropped}))}catch{toast('Save storage full; progress may not persist')}};
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bb9ca);scene.fog=new THREE.Fog(0x9bb9ca,65,135);const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.07,130),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.3));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.23;renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);renderer.domElement.style.touchAction='none';
@@ -87,7 +96,7 @@ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=m
 function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
 box(0,-.18,0,56,.3,60,stone);for(let x of [-28,28])box(x,6.4,0,.3,12.8,60,stone);for(let z of [-30,30])box(0,6.4,z,56,12.8,.3,stone);
 
-// v0.9.36: Initialize gallery elevations before window geometry uses them.
+// v0.9.37: Initialize gallery elevations before window geometry uses them.
 const GALLERY_TOP=5.89,GALLERY_CENTER=5.72,UPPER_BASE=7.35,ROOF_RISE=2.1;
 // v0.9.26 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
 // Decorative wall panels do not change collision geometry, stairs or interaction rays.
@@ -229,7 +238,7 @@ for(const x of [-23,23])box(x,12.82,0,.28,.25,49,railGold);
 for(const z of [-24.5,24.5])box(0,12.82,z,46,.25,.28,railGold);
 const skylightFill=new THREE.HemisphereLight(0xfff8e9,0x7a7067,1.65);scene.add(skylightFill);
 const softSun=new THREE.DirectionalLight(0xffe9c8,1.6);softSun.position.set(-12,24,-9);scene.add(softSun);
-// v0.9.36: decorative freestanding colonnades and arches removed for clear gallery sightlines.
+// v0.9.37: decorative freestanding colonnades and arches removed for clear gallery sightlines.
 const rugColors=[0xa74682,0x248e9a,0xb34337,0x7845ac,0x315bc5,0xb78a35,0x36865d,0x86664e];
 for(let g=0;g<0;g++){const x=[-23,-18,-13,-8,8,13,18,23][g];for(const level of [0,1]){
  const rug=new THREE.Mesh(new THREE.PlaneGeometry(1.45,45),new THREE.MeshStandardMaterial({color:rugColors[g],roughness:.96,side:THREE.DoubleSide}));rug.rotation.x=-Math.PI/2;rug.position.set(x,level?3.907:.055,0);scene.add(rug);
@@ -348,7 +357,7 @@ for(let i=0;i<SHELVES;i++){
  dummy.position.set(sh.x+Math.sin(sh.angle)*.68,sh.y+1.39,sh.z+Math.cos(sh.angle)*.68);
  dummy.rotation.set(0,sh.angle,0);dummy.scale.set(1,1,1);dummy.updateMatrix();
  seals.setMatrixAt(i,dummy.matrix);
- seals.setColorAt(i,new THREE.Color(genreSealColors[catalog[Math.min(i*8,TOTAL-1)].genre]));
+ seals.setColorAt(i,new THREE.Color(genreSealColors[catalog[Math.min(i*VOLUMES,TOTAL-1)].genre]));
 }
 seals.instanceMatrix.needsUpdate=true;seals.instanceColor.needsUpdate=true;scene.add(seals);
 
@@ -367,29 +376,30 @@ function batchOrnaments(geo,mat,positions){
 }
 batchOrnaments(new THREE.BoxGeometry(2.36,.13,.19),gold,crownPlaces);
 batchOrnaments(new THREE.TorusGeometry(.13,.032,5,10),gold,crestPlaces);
-// v0.9.36: shared wall-local book placement, used by spines, gold bands and flight effects.
+// v0.9.37: shared wall-local book placement, used by spines, gold bands and flight effects.
 // Rotate the slot offset and the depth offset together to match the shelf's facing.
-function shelfBookPose(sh,slot,vertical=.22,depth=.35){
- const lateral=-.88+slot*.24, a=sh.angle;
- return {x:sh.x+lateral*Math.cos(a)+depth*Math.sin(a),
-         y:sh.y+vertical,
-         z:sh.z-lateral*Math.sin(a)+depth*Math.cos(a),angle:a};
+function shelfBookPose(sh,slot,vertical=0,depth=.35){
+ const row=Math.floor(slot/8),col=slot%8;
+ const lateral=-.83+col*.235,a=sh.angle;
+ const y=sh.y-1.02+row*.59+vertical;
+ return {x:sh.x+lateral*Math.cos(a)+depth*Math.sin(a),y,
+ z:sh.z-lateral*Math.sin(a)+depth*Math.cos(a),angle:a};
 }
-// Visible book-spine markers are batched, not 3072 independent meshes.
-const spineGeom=new THREE.BoxGeometry(.19,.54,.19),spineMesh=new THREE.InstancedMesh(spineGeom,bookMats[0],TOTAL),spineDummy=new THREE.Object3D();for(let i=0;i<TOTAL;i++){const s=shelves[Math.floor(i/8)],slot=i%8;const pose=shelfBookPose(s,slot);spineDummy.position.set(pose.x,pose.y,pose.z);spineDummy.rotation.set(0,pose.angle,0);spineDummy.scale.set(1,1,1);spineDummy.updateMatrix();spineMesh.setMatrixAt(i,spineDummy.matrix);spineMesh.setColorAt(i,new THREE.Color(placed.has(i)?seriesColor(catalog[i].series):0x241c25))}spineMesh.instanceMatrix.needsUpdate=true;spineMesh.instanceColor.needsUpdate=true;scene.add(spineMesh);
+// Visible book-spine markers are batched, not 12800 independent meshes.
+const spineGeom=new THREE.BoxGeometry(.185,.43,.19),spineMesh=new THREE.InstancedMesh(spineGeom,bookMats[0],TOTAL),spineDummy=new THREE.Object3D();for(let i=0;i<TOTAL;i++){const s=shelves[Math.floor(i/VOLUMES)],slot=i%VOLUMES;const pose=shelfBookPose(s,slot);spineDummy.position.set(pose.x,pose.y,pose.z);spineDummy.rotation.set(0,pose.angle,0);spineDummy.scale.set(1,1,1);spineDummy.updateMatrix();spineMesh.setMatrixAt(i,spineDummy.matrix);spineMesh.setColorAt(i,new THREE.Color(placed.has(i)?seriesColor(catalog[i].series):0x241c25))}spineMesh.instanceMatrix.needsUpdate=true;spineMesh.instanceColor.needsUpdate=true;scene.add(spineMesh);
 // Gold volume bands: a shared instanced mesh creates readable physical bindings.
 const bindingBands=new THREE.InstancedMesh(new THREE.BoxGeometry(.19,.027,.21),gold,TOTAL*2);
-for(let id=0;id<TOTAL;id++){const sh=shelves[Math.floor(id/8)],slot=id%8;for(let j=0;j<2;j++){
- const pose=shelfBookPose(sh,slot,.22+(j?.19:-.19),.45);dummy.position.set(pose.x,pose.y,pose.z);dummy.rotation.set(0,pose.angle,0);
+for(let id=0;id<TOTAL;id++){const sh=shelves[Math.floor(id/VOLUMES)],slot=id%VOLUMES;for(let j=0;j<2;j++){
+ const pose=shelfBookPose(sh,slot,(j?.15:-.15),.45);dummy.position.set(pose.x,pose.y,pose.z);dummy.rotation.set(0,pose.angle,0);
  dummy.scale.setScalar(placed.has(id)?1:.001);dummy.updateMatrix();bindingBands.setMatrixAt(id*2+j,dummy.matrix)
 }}bindingBands.instanceMatrix.needsUpdate=true;scene.add(bindingBands);
-function updateBindingBands(id){const sh=shelves[Math.floor(id/8)],slot=id%8;for(let j=0;j<2;j++){
- const pose=shelfBookPose(sh,slot,.22+(j?.19:-.19),.45);dummy.position.set(pose.x,pose.y,pose.z);dummy.rotation.set(0,pose.angle,0);dummy.scale.setScalar(placed.has(id)?1:.001);dummy.updateMatrix();bindingBands.setMatrixAt(id*2+j,dummy.matrix)
+function updateBindingBands(id){const sh=shelves[Math.floor(id/VOLUMES)],slot=id%VOLUMES;for(let j=0;j<2;j++){
+ const pose=shelfBookPose(sh,slot,(j?.15:-.15),.45);dummy.position.set(pose.x,pose.y,pose.z);dummy.rotation.set(0,pose.angle,0);dummy.scale.setScalar(placed.has(id)?1:.001);dummy.updateMatrix();bindingBands.setMatrixAt(id*2+j,dummy.matrix)
 }bindingBands.instanceMatrix.needsUpdate=true}
 // Keep every loose book at a deterministic, persistent world position. No moving 160-book window.
-// Instancing renders all 3,072 potential books in one draw call without pop-in.
+// Instancing renders all 12,800 potential books in one draw call without pop-in.
 // A bound book has a paper page-block, colored cloth cover and illustrated front.
-// 8 procedural illustrated cover themes; per-series cloth tint distinguishes all 384 series.
+// 8 procedural illustrated cover themes; per-series cloth tint distinguishes all 400 series.
 const coverTextures=genres.map((genre,g)=>{
  const c=document.createElement('canvas');c.width=128;c.height=192;const ctx=c.getContext('2d');
  const hues=[343,192,17,277,223,39,111,24];ctx.fillStyle=`hsl(${hues[g]},68%,29%)`;ctx.fillRect(0,0,128,192);
@@ -461,8 +471,11 @@ for(let layer=0;layer<17;layer++){
 let layer=0;
 for(let id=0;id<TOTAL;id++){
  while(layer<pileLayers.length-1 && pileLayers[layer].length===0)layer++;
- const p=pileLayers[layer].pop();
- allLoosePositions.push({x:p.x,z:p.z,y:p.y,layer:p.layer});
+ let p=pileLayers[layer].pop();
+  if(!p){const k=id,ring=Math.floor(k/480),angle=k*2.399963229728653;
+    const radius=3.2+Math.sqrt(k%480)*.42;
+    p={x:Math.cos(angle)*radius,z:Math.sin(angle)*radius,y:.095+ring*.166,layer:ring};}
+  allLoosePositions.push({x:p.x,z:p.z,y:p.y,layer:p.layer});
  if(pileLayers[layer].length===0 && layer<pileLayers.length-1)layer++;
 }
 // Keep dropped books away from other books and shelf geometry as well.
@@ -553,8 +566,8 @@ function flyBook(id,kind,from){
  const origin=new THREE.Vector3(from.x,from.y,from.z);
  const destination=new THREE.Vector3();
  if(kind==='shelf'){
-  const sh=shelves[catalog[id].series],slot=id%8;
-  const pose=shelfBookPose(sh,slot,.25,.35);destination.set(pose.x,pose.y,pose.z);
+  const sh=shelves[catalog[id].series],slot=id%VOLUMES;
+  const pose=shelfBookPose(sh,slot,0,.35);destination.set(pose.x,pose.y,pose.z);
  }else{
   camera.getWorldDirection(destination);destination.multiplyScalar(1.05).add(camera.position);destination.y-=.25;
  }
@@ -588,7 +601,7 @@ const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
 const decorStone=new THREE.MeshStandardMaterial({color:0x524458,roughness:.91});
 const runeGlow=new THREE.MeshBasicMaterial({color:0x8c78d4,transparent:true,opacity:.67,depthWrite:false});
 function instancedDecor(geo,mat,positions){const mesh=new THREE.InstancedMesh(geo,mat,positions.length);const d=new THREE.Object3D();positions.forEach(([x,y,z,sx=1,sy=1,sz=1],i)=>{d.position.set(x,y,z);d.scale.set(sx,sy,sz);d.updateMatrix();mesh.setMatrixAt(i,d.matrix)});mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
-// v0.9.36: wall pilasters and capitals removed; structural walls remain.
+// v0.9.37: wall pilasters and capitals removed; structural walls remain.
 // Ceiling coffers and ribs suggest an old vaulted archive, without expensive shadows.
 const coffers=[];const ribEnds=[];
 for(let z=-25;z<=25;z+=5){for(let x=-22;x<=22;x+=5.5){coffers.push([x,12.62,z]);ribEnds.push([x,12.47,z])}}
@@ -718,7 +731,7 @@ function satchelLimit(){return 10+5*satchelRank()}
 function tierCost(k){const r=k==='satchel'?satchelRank():k==='magnet'?magnetRank():swiftRank();return k==='satchel'?100+50*r:k==='magnet'?[125,200,300][Math.min(r,2)]:75+50*r}
 function xpAvailable(){return Math.max(0,xp-xpSpent)}
 function levelNow(){return 1+Math.floor(xp/100)}
-function floorNow(){return camera.position.y>(GROUND_EYE+UPPER_EYE)/2?1:0}function updateHUD(){let count=placed.size;$('progress').textContent=`${count} / ${TOTAL}`;$('rows').textContent=Array.from({length:SERIES},(_,i)=>i).filter(i=>{for(let j=0;j<8;j++)if(!placed.has(i*8+j))return false;return true}).length;$('carry').textContent=`Satchel: ${inventory.length} / ${satchelLimit()}`;$('xp').textContent=`${xpAvailable()} / ${xp} · Lv${levelNow()}`;$('points').textContent=points;$('objective').textContent=count===TOTAL?'The archive is restored!':'Restore the series · Spend XP in MAGIC';if(waypoint!==null&&xpPerks.compass){const sh=shelves[waypoint],dist=Math.hypot(sh.x-camera.position.x,sh.z-camera.position.z),a=Math.atan2(sh.x-camera.position.x,-(sh.z-camera.position.z))-yaw;const direction=['↑','↗','→','↘','↓','↙','←','↖'][((Math.round(((a%(Math.PI*2))+(Math.PI*2))%(Math.PI*2)/(Math.PI/4)))%8)];$('objective').textContent=`🧭 ${direction} Shelf ${waypoint+1} · ${dist.toFixed(1)}m · Floor ${sh.floor+1}`;}let t=target();setAimHighlight(t);$('hint').textContent=t?.type==='book'?`📕 ${details(t.id)}`:t?.type==='shelf'?`📚 Shelf #${t.id+1} · ${t.id<SERIES?`${title(t.id*8)} · ${genres[catalog[t.id*8].genre]} · ${Array.from({length:8},(_,v)=>placed.has(t.id*8+v)?1:0).reduce((a,b)=>a+b,0)}/8 books`:'Reserve shelf · 0/0 books'}`:t?.type==='key'?'✨ Hidden key':t?.type==='chest'?`🎁 Chest ${t.id+1}: ${t.id===0?'Sprint (3 keys)':'Mega-jump (6 keys)'}`:'Aim directly at a book or shelf';$('act').textContent=t?.type==='book'?'PICK UP':t?.type==='shelf'?'PLACE BOOK':t?.type==='key'?'TAKE KEY':t?.type==='chest'?'OPEN CHEST':'INTERACT'}
+function floorNow(){return camera.position.y>(GROUND_EYE+UPPER_EYE)/2?1:0}function updateHUD(){let count=placed.size;$('progress').textContent=`${count} / ${TOTAL}`;$('rows').textContent=Array.from({length:SERIES},(_,i)=>i).filter(i=>{for(let j=0;j<VOLUMES;j++)if(!placed.has(i*VOLUMES+j))return false;return true}).length;$('carry').textContent=`Satchel: ${inventory.length} / ${satchelLimit()}`;$('xp').textContent=`${xpAvailable()} / ${xp} · Lv${levelNow()}`;$('points').textContent=points;$('objective').textContent=count===TOTAL?'The archive is restored!':'Restore the series · Spend XP in MAGIC';if(waypoint!==null&&xpPerks.compass){const sh=shelves[waypoint],dist=Math.hypot(sh.x-camera.position.x,sh.z-camera.position.z),a=Math.atan2(sh.x-camera.position.x,-(sh.z-camera.position.z))-yaw;const direction=['↑','↗','→','↘','↓','↙','←','↖'][((Math.round(((a%(Math.PI*2))+(Math.PI*2))%(Math.PI*2)/(Math.PI/4)))%8)];$('objective').textContent=`🧭 ${direction} Shelf ${waypoint+1} · ${dist.toFixed(1)}m · Floor ${sh.floor+1}`;}let t=target();setAimHighlight(t);$('hint').textContent=t?.type==='book'?`📕 ${details(t.id)}`:t?.type==='shelf'?`📚 Shelf #${t.id+1} · ${t.id<SERIES?`${title(t.id*VOLUMES)} · ${genres[catalog[t.id*VOLUMES].genre]} · ${Array.from({length:VOLUMES},(_,v)=>placed.has(t.id*VOLUMES+v)?1:0).reduce((a,b)=>a+b,0)}/${VOLUMES} books`:'Reserve shelf · 0/0 books'}`:t?.type==='key'?'✨ Hidden key':t?.type==='chest'?`🎁 Chest ${t.id+1}: ${t.id===0?'Sprint (3 keys)':'Mega-jump (6 keys)'}`:'Aim directly at a book or shelf';$('act').textContent=t?.type==='book'?'PICK UP':t?.type==='shelf'?'PLACE BOOK':t?.type==='key'?'TAKE KEY':t?.type==='chest'?'OPEN CHEST':'INTERACT'}
 // v0.9.26: reference-inspired fairy portrait with transparent background, embedded offline.
 // Uses a camera-facing character plane rather than blocky primitive anatomy.
 const fairyRoot=new THREE.Group();camera.add(fairyRoot);scene.add(camera);fairyRoot.visible=false;
@@ -875,7 +888,7 @@ function animateFairy(now){
  return {yaw:impulse*.22,pitch:-impulse*.085,roll:impulse*.17};
 }
 function awardRow(){audioCue('complete');xp+=25;points+=1;toast('✨ Series complete! +25 XP · +1 skill point')}
-function placeBook(id,shelfId){if(shelfId>=SERIES||catalog[id].series!==shelfId){triggerFairy();return false}let expected=catalog[id].series*8+catalog[id].vol-1;if(id!==expected)return false;if(placed.has(id)){toast('That volume is already shelved.');return false}const sh=shelves[shelfId];flyBook(id,'shelf',{x:camera.position.x,y:camera.position.y-.32,z:camera.position.z});placed.add(id);inventory.splice(inventory.indexOf(id),1);spineMesh.setColorAt(id,seriesColor(catalog[id].series));spineMesh.instanceColor.needsUpdate=true;updateBindingBands(id);const shelfCount=Array.from({length:8},(_,v)=>placed.has(shelfId*8+v)).filter(Boolean).length;const gainedXP=shelfCount*2;audioCue('shelf',shelfCount);xp+=gainedXP;if(shelfCount===8){awardRow();toast(`Shelved ${name(id)} · 8/8 · +${gainedXP} XP · Series complete!`)}else toast(`Shelved ${name(id)} · ${shelfCount}/8 · +${gainedXP} XP`);save();return true}
+function placeBook(id,shelfId){if(shelfId>=SERIES||catalog[id].series!==shelfId){triggerFairy();return false}let expected=catalog[id].series*VOLUMES+catalog[id].vol-1;if(id!==expected)return false;if(placed.has(id)){toast('That volume is already shelved.');return false}const sh=shelves[shelfId];flyBook(id,'shelf',{x:camera.position.x,y:camera.position.y-.32,z:camera.position.z});placed.add(id);inventory.splice(inventory.indexOf(id),1);spineMesh.setColorAt(id,seriesColor(catalog[id].series));spineMesh.instanceColor.needsUpdate=true;updateBindingBands(id);const shelfCount=Array.from({length:VOLUMES},(_,v)=>placed.has(shelfId*VOLUMES+v)).filter(Boolean).length;const gainedXP=shelfCount*2;audioCue('shelf',shelfCount);xp+=gainedXP;if(shelfCount===VOLUMES){awardRow();toast(`Shelved ${name(id)} · 32/32 · +${gainedXP} XP · Series complete!`)}else toast(`Shelved ${name(id)} · ${shelfCount}/${VOLUMES} · +${gainedXP} XP`);save();return true}
 function interact(){if($('panel').style.display==='block')return;let t=target();if(!t){toast('Move closer and aim at an object');return}if(t.type==='book'){if(inventory.length>=satchelLimit()){toast('Satchel full');return}audioCue('pickup');flyBook(t.id,'pickup',{x:t.obj.x,y:.16+(t.id%3)*.06,z:t.obj.z});inventory.push(t.id);delete dropped[t.id];save();refreshLoose();toast(`Picked up ${name(t.id)}`)}else if(t.type==='shelf'){let match=inventory.filter(id=>catalog[id].series===t.id).sort((a,b)=>a-b);if(!match.length){if(inventory.length)triggerFairy();else toast('Your satchel is empty');return}let done=0;for(let id of match)if(placeBook(id,t.id))done++;if(done)refreshLoose()}else if(t.type==='key'){audioCue('key');keys.add(t.id);t.obj.mesh.visible=false;save();toast(`Hidden key found! ${keys.size}/6`)}else if(t.type==='chest'){if(keys.size<3+t.id*3){toast(`Need ${3+t.id*3} hidden keys to open this chest`);return}chests.add(t.id);t.obj.mesh.visible=false;save();toast(t.id===0?'Sprint unlocked! Movement speed increased.':'Mega-jump chest opened! Jump is now available.') }updateHUD()}
 $('act').onclick=interact;function panel(title,html){$('panelTitle').textContent=title;$('content').innerHTML=html;$('panel').style.display='block';resetJoy();lookId=null}function close(){ $('panel').style.display='none'}$('close').onclick=close;
 function dropBook(id){if(!inventory.includes(id))return;let forwardX=-Math.sin(yaw),forwardZ=-Math.cos(yaw);let x=Math.max(-25.5,Math.min(25.5,camera.position.x+forwardX*1.4)),z=Math.max(-27.5,Math.min(27.5,camera.position.z+forwardZ*1.4));const safe=findSafeDrop(x,z,id);if(!safe){toast('No clear space to drop that book here');return}dropped[id]=safe;inventory.splice(inventory.indexOf(id),1);active=0;save();refreshLoose();toast('Dropped '+name(id));openSatchel()}
@@ -887,7 +900,7 @@ function buyPerk(k,cost){if(['satchel','magnet','swift'].includes(k))cost=tierCo
 function lanternToggle(){if(!xpPerks.lantern)return;lanternOn=!lanternOn;lanternLight.intensity=lanternOn?5:0;toast(lanternOn?'Lantern lit':'Lantern extinguished');showSkills()}
 function teleport(){if(!skill.teleport)return;const now=abilityClock();if(now<teleportCooldown){toast(`Portal recharging: ${Math.ceil(teleportCooldown-now)}s`);return}const upstairs=floorNow()===0;camera.position.set(upstairs?23.5:0,upstairs?UPPER_EYE:GROUND_EYE,upstairs?7:25.8);upperLevel=upstairs;stairTravel=false;teleportCooldown=now+30;close();updateHUD();toast(upstairs?'Teleported to upper landing':'Teleported to ground landing')}
 function spectral(){if(!skill.spectral)return;const now=abilityClock();if(now<spectralCooldown){toast(`Spectral Librarian recharging: ${Math.ceil(spectralCooldown-now)}s`);return}spectralUntil=now+60;spectralCooldown=now+180;spectralNext=now;close();toast('Spectral Librarian summoned for 60 seconds!')}
-function oracle(series){if(!skill.oracle)return;const id=Number(series)-1;if(!Number.isInteger(id)||id<0||id>=SERIES){toast('Choose a series from 1 to 384');return}oracleSeries=id;oracleUntil=abilityClock()+45;mapFloor=Math.floor(id/200);mapMode='books';mapView();toast('Oracle Vision: 45 seconds')}
+function oracle(series){if(!skill.oracle)return;const id=Number(series)-1;if(!Number.isInteger(id)||id<0||id>=SERIES){toast('Choose a series from 1 to 400');return}oracleSeries=id;oracleUntil=abilityClock()+45;mapFloor=Math.floor(id/200);mapMode='books';mapView();toast('Oracle Vision: 45 seconds')}
 function abilityTick(now,dt){
  lanternLight.position.copy(camera.position);lanternLight.intensity=lanternOn&&xpPerks.lantern?5:0;
  if(inventory.length===0&&magnetRank()>0)magnetCycleActive=true; if(inventory.length>=satchelLimit())magnetCycleActive=false;
@@ -908,7 +921,7 @@ function showSkills(tab=magicTab){magicTab=tab;
  <button data-perk="magnet">🧲 Book Magnet · ${magnetRank()>=3?'MAX RANK':tierCost('magnet')+' XP'} · Rank ${magnetRank()}/3<small>Range ${magnetRadius().toFixed(1)}m · Activates with an empty satchel, pauses when full until emptied again</small></button>
  <button data-perk="lantern">🏮 Archivist's Lantern · ${xpPerks.lantern?'OWNED':'90 XP'}<small> Warm light follows your camera</small></button>
  ${xpPerks.lantern?`<button id="lanternToggle">${lanternOn?'EXTINGUISH':'LIGHT'} LANTERN</button>`:''}`;
- const spButtons=`<p>Available SP: <b>${points}</b> · Earn 1 SP for each completed 8-volume series.</p>
+ const spButtons=`<p>Available SP: <b>${points}</b> · Earn 1 SP for each completed 32-volume series.</p>
  <button data-skill="highlight">🔮 Series Sight · ${skill.highlight?'OWNED':'1 SP'}</button>
  <button data-skill="sort">📚 Order Satchel · ${skill.sort?'OWNED':'2 SP'}</button>
  <button data-skill="assemble">✨ Assemble Series · ${skill.assemble?'OWNED':'4 SP'}</button>
@@ -920,7 +933,7 @@ function showSkills(tab=magicTab){magicTab=tab;
  ${xpPerks.lantern?`<button id="lanternToggle">🏮 ${lanternOn?'Extinguish':'Light'} Lantern</button>`:''}
  ${skill.teleport?`<button id="teleportNow">🌀 Teleport to ${floorNow()?'ground':'upper'} floor · ${Math.max(0,Math.ceil(teleportCooldown-abilityClock()))}s cooldown</button>`:''}
  ${skill.spectral?`<button id="spectralNow">👻 Summon Spectral Librarian · ${Math.max(0,Math.ceil(spectralCooldown-abilityClock()))}s cooldown</button>`:''}
- ${skill.oracle?`<div class="abilitySelect"><label for="oraclePick">👁️ Oracle's Vision — Series 1–384</label><input id="oraclePick" type="number" min="1" max="384" value="1"><button id="oracleNow">Reveal missing volumes</button></div>`:''}
+ ${skill.oracle?`<div class="abilitySelect"><label for="oraclePick">👁️ Oracle's Vision — Series 1–400</label><input id="oraclePick" type="number" min="1" max="400" value="1"><button id="oracleNow">Reveal missing volumes</button></div>`:''}
  ${skill.sort?'<button id="autoSort">📚 Sort satchel</button>':''}
  ${!(xpPerks.lantern||skill.teleport||skill.spectral||skill.oracle||skill.sort)?'<p>Purchase upgrades in the XP and SP tabs to unlock actions.</p>':''}`;
  panel('Character Progression',`<div class="mapTools"><button id="xpTab">XP Upgrades</button><button id="spTab">SP Magic</button><button id="abilityTab">Abilities</button></div>${tab==='xp'?xpButtons:tab==='sp'?spButtons:abilityButtons}`);
@@ -943,10 +956,10 @@ function mapView(){
  const [sx,sz]=mapXY(0,16);ctx.fillStyle='#9365c8';ctx.fillRect(sx-14,mapXY(0,9.75)[1],28,mapXY(0,22.4)[1]-mapXY(0,9.75)[1]);
  ctx.fillStyle='#e5c5ff';ctx.font='bold 12px system-ui';ctx.fillText('STAIRS',sx+17,sz);
  if(mapMode==='books'&&xpPerks.radar){ctx.fillStyle='#d8b9ff';for(let id=0;id<TOTAL;id++){if(placed.has(id)||inventory.includes(id))continue;const p=dropped[id]||allLoosePositions[id];const [x,z]=mapXY(p.x,p.z);ctx.fillRect(x,z,1.5,1.5)}}
- if(oracleSeries!==null&&abilityClock()<oracleUntil){for(let v=0;v<8;v++){const id=oracleSeries*8+v;if(placed.has(id)||inventory.includes(id))continue;const p=dropped[id]||allLoosePositions[id];if(mapFloor!==0)continue;const [ox,oz]=mapXY(p.x,p.z);ctx.fillStyle='#ffef83';ctx.beginPath();ctx.arc(ox,oz,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#7040ab';ctx.lineWidth=2;ctx.stroke()}}
+ if(oracleSeries!==null&&abilityClock()<oracleUntil){for(let v=0;v<VOLUMES;v++){const id=oracleSeries*VOLUMES+v;if(placed.has(id)||inventory.includes(id))continue;const p=dropped[id]||allLoosePositions[id];if(mapFloor!==0)continue;const [ox,oz]=mapXY(p.x,p.z);ctx.fillStyle='#ffef83';ctx.beginPath();ctx.arc(ox,oz,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#7040ab';ctx.lineWidth=2;ctx.stroke()}}
  for(let i=mapFloor*200;i<(mapFloor+1)*200;i++){
- const sh=shelves[i],n=i<SERIES?Array.from({length:8},(_,v)=>placed.has(i*8+v)?1:0).reduce((a,b)=>a+b,0):-1;
- const [x,z]=mapXY(sh.x,sh.z);ctx.fillStyle=n<0?'#7b7386':n===8?'#61c98d':n>0?'#e2a45b':'#658db3';ctx.fillRect(x-7,z-4,14,8);
+ const sh=shelves[i],n=i<SERIES?Array.from({length:VOLUMES},(_,v)=>placed.has(i*VOLUMES+v)?1:0).reduce((a,b)=>a+b,0):-1;
+ const [x,z]=mapXY(sh.x,sh.z);ctx.fillStyle=n<0?'#7b7386':n===VOLUMES?'#61c98d':n>0?'#e2a45b':'#658db3';ctx.fillRect(x-7,z-4,14,8);
  if(waypoint===i){ctx.strokeStyle='#ffeb91';ctx.lineWidth=2;ctx.strokeRect(x-10,z-7,20,14)}
  }
  if(mapFloor===floorNow()){let [x,z]=mapXY(camera.position.x,camera.position.z);ctx.fillStyle='#ffd45e';ctx.beginPath();ctx.arc(x,z,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff3b5';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,z);ctx.lineTo(x-Math.sin(yaw)*17,z-Math.cos(yaw)*17);ctx.stroke()}
@@ -959,13 +972,13 @@ function mapView(){
  let best=-1,dist=15;
  for(let i=mapFloor*200;i<(mapFloor+1)*200;i++){let [a,b]=mapXY(shelves[i].x,shelves[i].z),d=Math.hypot(a-x,b-z);if(d<dist){dist=d;best=i}}
  if(best<0){$('mapInfo').textContent='Tap a colored shelf marker to inspect it.';return}
- const n=best<SERIES?Array.from({length:8},(_,v)=>placed.has(best*8+v)?1:0).reduce((a,b)=>a+b,0):0;
- $('mapInfo').textContent=`Shelf #${best+1} · ${best<SERIES?title(best*8)+' · '+n+'/8 volumes':'Reserve shelf'}`;
- if(xpPerks.compass){waypoint=best;mapView();$('mapInfo').textContent=`Waypoint: Shelf #${best+1} · ${n}/8 volumes. Close map to follow compass.`}
+ const n=best<SERIES?Array.from({length:VOLUMES},(_,v)=>placed.has(best*VOLUMES+v)?1:0).reduce((a,b)=>a+b,0):0;
+ $('mapInfo').textContent=`Shelf #${best+1} · ${best<SERIES?title(best*VOLUMES)+' · '+n+'/${VOLUMES} volumes':'Reserve shelf'}`;
+ if(xpPerks.compass){waypoint=best;mapView();$('mapInfo').textContent=`Waypoint: Shelf #${best+1} · ${n}/${VOLUMES} volumes. Close map to follow compass.`}
  };
 }
 $('map').onclick=()=>{mapFloor=floorNow();mapView()};
-$('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 3,072 books across this two-story archive. Restore all 384 eight-volume series on 400 shelves.</p><p><b>Controls:</b> Left thumb joystick to move; right thumb drag to look. Both work simultaneously. Tap PICK UP or PLACE BOOK. Desktop: WASD + mouse drag + E, Space to jump. Mobile: tap JUMP to hop or vault the balcony railing.</p><p><b>Sorting:</b> Pick up to 10 books. Each book has a genre, series and volume (1–8). Find its numbered shelf and place volumes in any order. A complete series earns a skill point.</p><p><b>Keys:</b> Find 6 keys. The upstairs first chest opens with 3 keys and unlocks sprint. The second opens with all 6 and awards mega-jump access (jump physics not yet implemented).</p><p><b>Shelf Sight:</b> Spend 1 skill point in MAGIC to reveal nearby shelf numbers above bookcases. Spend 2 more to extend visibility.</p><p><b>Dropping:</b> Open SATCHEL and tap DROP BOOK. Books remain on the floor and can be recovered.</p><p><b>Progress:</b> Saved on this browser/device. v0.9.6 improves two-way staircase travel and retains precise crosshair targeting and shelf progress to the improved library layout; it remains a foundation build; decoration and navigation remain under development.</p><button id="restart">Reset all progress</button>`);const resetButton=$('content').querySelector('#restart');if(resetButton)resetButton.onclick=()=>{if(confirm('Erase all v0.7 progress?')){localStorage.removeItem(storage);location.reload()}}};
+$('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 12,800 books across this two-story archive. Restore all 400 thirty-two-volume series on 400 shelves.</p><p><b>Controls:</b> Left thumb joystick to move; right thumb drag to look. Both work simultaneously. Tap PICK UP or PLACE BOOK. Desktop: WASD + mouse drag + E, Space to jump. Mobile: tap JUMP to hop or vault the balcony railing.</p><p><b>Sorting:</b> Pick up to 10 books. Each book has a genre, series and volume (1–32). Find its numbered shelf and place volumes in any order. A complete series earns a skill point.</p><p><b>Keys:</b> Find 6 keys. The upstairs first chest opens with 3 keys and unlocks sprint. The second opens with all 6 and awards mega-jump access (jump physics not yet implemented).</p><p><b>Shelf Sight:</b> Spend 1 skill point in MAGIC to reveal nearby shelf numbers above bookcases. Spend 2 more to extend visibility.</p><p><b>Dropping:</b> Open SATCHEL and tap DROP BOOK. Books remain on the floor and can be recovered.</p><p><b>Progress:</b> Saved on this browser/device. v0.9.6 improves two-way staircase travel and retains precise crosshair targeting and shelf progress to the improved library layout; it remains a foundation build; decoration and navigation remain under development.</p><button id="restart">Reset all progress</button>`);const resetButton=$('content').querySelector('#restart');if(resetButton)resetButton.onclick=()=>{if(confirm('Erase all v0.7 progress?')){localStorage.removeItem(storage);location.reload()}}};
 let stairTravel=false,upperLevel=false,ladderTravel=false,jumpVelocity=0,jumpOffset=0,jumpQueued=false,fallingFromBalcony=false;
 const jumpButton=document.createElement("button");jumpButton.id="jump";jumpButton.textContent="JUMP";jumpButton.style.cssText="position:fixed;right:12px;bottom:calc(235px + env(safe-area-inset-bottom));z-index:4;background:#66448c;border:1px solid #f1bf66;border-radius:28px;padding:14px 17px;touch-action:manipulation";document.body.appendChild(jumpButton);jumpButton.addEventListener("pointerdown",e=>{e.preventDefault();jumpQueued=true});window.addEventListener("keydown",e=>{if(e.code==="Space"&&!e.repeat){e.preventDefault();jumpQueued=true}});
 const GROUND_EYE=1.65,UPPER_EYE=GALLERY_TOP+1.47;
@@ -1028,7 +1041,7 @@ function loop(now){
   camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*12);
   if(Math.abs(camera.position.y-desired)<.05)ladderTravel=false;
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.36: Open stair entries and connected landings loaded!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.37: Open stair entries and connected landings loaded!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';
