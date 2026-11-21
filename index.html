@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.66</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.67</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}canvas:not(#mapCanvas){position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
 
 /* v0.9.62 thumb zones: menus above left joystick; action and jump on right */
@@ -8,7 +8,7 @@
 #jump{position:fixed!important;right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:110px;min-height:52px;z-index:6}
 @media(orientation:portrait){#buttons{left:9px;bottom:calc(203px + env(safe-area-inset-bottom));width:155px;max-width:47vw}#buttons button{font-size:10px;padding:8px 2px}#act{right:9px;bottom:calc(84px + env(safe-area-inset-bottom));width:138px;max-width:43vw}#jump{bottom:calc(20px + env(safe-area-inset-bottom))!important}}
 @media(max-height:450px){#buttons{bottom:calc(132px + env(safe-area-inset-bottom))}#act{bottom:calc(72px + env(safe-area-inset-bottom))}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.66</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.67</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -1364,7 +1364,7 @@ addEventListener('pagehide',suspendArchive);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendArchive();else prev=performance.now()});
 addEventListener('blur',suspendArchive);
 
-// v0.9.66 Living Archive: free-standing portal, reading nooks and ambient visitors.
+// v0.9.67 Living Archive: free-standing portal, reading nooks and ambient visitors.
 // Ground floor only. Keep a 4m clear shelf-access corridor along the entire perimeter,
 // and preserve the central book pile, stairs, ladders and existing player movement.
 const living=new THREE.Group();scene.add(living);
@@ -1408,60 +1408,114 @@ for(let i=0;i<3;i++){
  const r=new THREE.Mesh(new THREE.TorusGeometry(.58+i*.16,.023,5,40),portalGlow);
  r.position.set(0,1.48,.055+i*.015);r.scale.y=1.55;portal.add(r);portalRings.push(r);
 }
+// v0.9.67: mobile-friendly expressive animated fantasy NPCs.
 const visitors=[];
-function makeVisitor(robeColor,hat=false){
+const npcSkin=[0x9e6348,0xe3b38c,0xb47b57,0xd5a078,0x80533e];
+const npcHair=[0x251c2a,0x493026,0xe0c5a2,0x382323,0x352b38];
+function makeVisitor(robeColor,hat=false,identity=0){
  const g=new THREE.Group();living.add(g);
- const robe=new THREE.MeshStandardMaterial({color:robeColor,roughness:.92});
- const skin=new THREE.MeshStandardMaterial({color:0xb78b6c,roughness:.92});
- const skirt=new THREE.Mesh(new THREE.ConeGeometry(.39,1.15,9),robe);skirt.position.y=.68;g.add(skirt);
- livingCylinder(g,0,1.38,0,.23,.28,.48,robe);
- livingSphere(g,0,1.81,0,.23,skin);
- for(const side of [-1,1]){let arm=livingCylinder(g,side*.33,1.3,0,.09,.1,.68,robe);arm.rotation.z=side*.4;}
- if(hat){const brim=livingCylinder(g,0,2.02,0,.39,.39,.08,livingPurple);const cone=new THREE.Mesh(new THREE.ConeGeometry(.29,.65,10),livingPurple);cone.position.y=2.37;g.add(cone)}
- else livingSphere(g,0,1.98,-.03,.22,new THREE.MeshStandardMaterial({color:0x493b37}));
- return g;
+ const robe=new THREE.MeshStandardMaterial({color:robeColor,roughness:.83,side:THREE.DoubleSide});
+ const skin=new THREE.MeshStandardMaterial({color:npcSkin[identity%5],roughness:.9});
+ const hair=new THREE.MeshStandardMaterial({color:npcHair[identity%5],roughness:.93});
+ const dark=new THREE.MeshStandardMaterial({color:0x201a28,roughness:.65});
+ const white=new THREE.MeshStandardMaterial({color:0xfff0dc,roughness:.7});
+ const trim=new THREE.MeshStandardMaterial({color:0xd6aa65,metalness:.25,roughness:.5});
+ const torso=livingCylinder(g,0,1.28,0,.29,.37,.68,robe);
+ const skirt=new THREE.Mesh(new THREE.CylinderGeometry(.30,.52,.78,12),robe);skirt.position.y=.69;g.add(skirt);
+ const belt=livingCylinder(g,0,1.01,0,.33,.33,.075,trim);
+ const head=livingSphere(g,0,1.84,0,.265,skin);head.scale.set(.92,1.13,.85);
+ const nose=livingSphere(g,0,1.82,.243,.047,skin);nose.scale.set(.7,1,.7);
+ for(const side of [-1,1]){
+  const eye=livingSphere(g,side*.105,1.89,.218,.045,white);eye.scale.set(.9,1.08,.4);
+  const pupil=livingSphere(g,side*.105,1.89,.252,.026,dark);pupil.scale.z=.5;
+  const brow=livingBox(g,side*.105,1.965,.235,.12,.018,.025,hair);
+ }
+ const mouth=livingBox(g,0,1.725,.237,.105,.015,.015,dark);
+ const cap=livingSphere(g,0,2.065,-.055,.26,hair);cap.scale.set(1.06,.53,.95);
+ if(identity%3===0){for(const side of [-1,1]){const lock=livingSphere(g,side*.22,1.69,-.025,.12,hair);lock.scale.set(.7,2.3,.8)}}
+ const arms=[];for(const side of [-1,1]){
+  const pivot=new THREE.Group();pivot.position.set(side*.31,1.51,0);g.add(pivot);
+  const sleeve=livingCylinder(pivot,side*.07,-.29,.04,.105,.15,.58,robe);sleeve.rotation.z=side*.19;
+  livingSphere(pivot,side*.13,-.57,.07,.085,skin);arms.push(pivot);
+ }
+ const legs=[];for(const side of [-1,1]){
+  const pivot=new THREE.Group();pivot.position.set(side*.17,.59,0);g.add(pivot);
+  livingCylinder(pivot,0,-.22,0,.095,.105,.48,dark);
+  const boot=livingBox(pivot,0,-.45,.09,.22,.15,.34,dark);legs.push(pivot);
+ }
+ livingBox(g,0,1.42,.30,.14,.16,.035,trim);
+ if(hat){const brim=livingCylinder(g,0,2.17,0,.46,.46,.075,robe);
+  const crown=new THREE.Mesh(new THREE.ConeGeometry(.31,.66,16),robe);crown.position.y=2.48;crown.rotation.z=.14;g.add(crown);
+  livingCylinder(g,0,2.25,0,.32,.32,.065,trim);
+ }
+ g.userData={arms,legs,head,skirt,torso,baseHeadY:head.position.y};return g;
 }
-// Librarian has a fixed desk, away from shelves, stairs and the portal approach.
+// Keep stations well away from the shelves and use an actual seated posture.
 const desk=new THREE.Group();desk.position.set(0,0,-16.7);living.add(desk);
 livingBox(desk,0,.95,0,3.2,.19,1.25,livingWood);
 livingBox(desk,0,.48,-.38,3.0,.85,.27,livingWood);
 for(const x of [-1.38,1.38])livingBox(desk,x,.5,.4,.2,.9,.2,livingWood);
 livingBox(desk,.4,1.08,0,.64,.08,.42,livingGold);
-const witch=makeVisitor(0x3b355f,true);witch.position.set(0,0,-17.5);witch.rotation.y=Math.PI;
-const npcColors=[0x52716a,0x76556c,0x745f42,0x455d87];
+const ledger=livingBox(desk,-.55,1.08,.16,.67,.055,.45,livingPurple);
+const witch=makeVisitor(0x493064,true,0);witch.position.set(0,0,-17.5);witch.rotation.y=Math.PI;
+const npcColors=[0x386d75,0x87506d,0x6a7041,0x4e558e];
 const npcStarts=[[0,-22],[-12,-13],[12,13],[12,-13]];
 for(let i=0;i<4;i++){
- const npc=makeVisitor(npcColors[i],i===3);
- npc.position.set(...[npcStarts[i][0],0,npcStarts[i][1]]);
- visitors.push({npc,index:i,phase:i*.27,mode:i===0?'enter':'read',timer:i*7,seat:readingLocations[i],start:npc.position.clone()});
+ const npc=makeVisitor(npcColors[i],i===3,i+1);
+ npc.position.set(npcStarts[i][0],0,npcStarts[i][1]);
+ const seat=readingLocations[i];
+ visitors.push({npc,index:i,mode:i===0?'enter':'read',timer:i*7,seat,start:npc.position.clone(),route:[],routeIndex:0,walkPhase:i*1.2});
 }
-const livingClock=new THREE.Clock();
+// Aisle-first waypoints keep visitors away from the central book mountain.
+function visitorRoute(from,to){
+ const side=to[0]<0?-1:1;
+ return [new THREE.Vector3(side*19,0,-21),new THREE.Vector3(side*19,0,to[1]),new THREE.Vector3(to[0],0,to[1])];
+}
+function beginWalk(v,mode){v.mode=mode;v.timer=0;v.routeIndex=0;
+ v.route=mode==='leave'?visitorRoute(v.npc.position,[0,-22]).slice(0,2).concat([new THREE.Vector3(0,0,-22)]):visitorRoute(v.npc.position,v.seat);
+ // Depart the portal through the same clear outer aisle.
+ if(mode==='enter')v.route=[new THREE.Vector3(v.seat[0]<0?-19:19,0,-21),new THREE.Vector3(v.seat[0]<0?-19:19,0,v.seat[1]),new THREE.Vector3(v.seat[0],0,v.seat[1])];
+}
+function setSeated(n,seated){const u=n.userData;n.scale.y=seated?.83:1;
+ u.legs.forEach((leg,i)=>{leg.rotation.x=seated?-1.18:0});
+ u.arms.forEach((arm,i)=>{arm.rotation.x=seated?-.7:0});
+}
 function animateLivingArchive(dt,now){
  const t=now/1000;
  portalDisk.material.opacity=.43+.12*Math.sin(t*2.2);
- portalRings.forEach((ring,i)=>{ring.rotation.z=t*(i%2?-0.38:.27)+i*1.4;ring.material.opacity=.45+.13*Math.sin(t*2+i)});
- witch.rotation.y=Math.PI+.12*Math.sin(t*.5);
- witch.position.y=.025*Math.sin(t*2);
+ portalRings.forEach((ring,i)=>{ring.rotation.z=t*(i%2?-.38:.27)+i*1.4});
+ witch.rotation.y=Math.PI+.10*Math.sin(t*.5);
+ witch.userData.arms[0].rotation.x=-.35+.15*Math.sin(t*2.1);
+ witch.userData.arms[1].rotation.x=-.55+.18*Math.sin(t*1.6);
+ witch.position.y=.012*Math.sin(t*1.8);
  for(const v of visitors){
-  v.timer+=dt;
-  const n=v.npc;
+  v.timer+=dt;const n=v.npc,u=n.userData;
   if(v.mode==='read'){
-   n.position.y=.04*Math.sin(t*1.4+v.index);
-   n.rotation.y=Math.sin(t*.35+v.index)*.17;
-   if(v.timer>32+v.index*9){v.mode='leave';v.timer=0;v.start.copy(n.position)}
-  }else if(v.mode==='leave'){
-   const a=Math.min(1,v.timer/12);n.position.lerpVectors(v.start,new THREE.Vector3(0,0,-22),a);
-   n.rotation.y=Math.atan2(-v.start.x,-22-v.start.z);
-   n.visible=a<.96;
-   if(a>=1){v.mode='wait';v.timer=0;n.visible=false}
+   setSeated(n,true);
+   n.position.y=.035*Math.sin(t*1.2+v.index);
+   n.rotation.y=v.seat[0]<0?Math.PI/2:-Math.PI/2;
+   u.arms[0].rotation.x=-.65+.18*Math.sin(t*.9+v.index);
+   u.arms[1].rotation.x=-.65+.12*Math.sin(t*1.1+v.index);
+   if(v.timer>38+v.index*9){setSeated(n,false);beginWalk(v,'leave')}
   }else if(v.mode==='wait'){
-   if(v.timer>5+v.index*2){v.mode='enter';v.timer=0;n.position.set(0,0,-22);n.visible=true}
+   if(v.timer>6+v.index*2){n.position.set(0,0,-22);n.visible=true;beginWalk(v,'enter')}
   }else{
-   const a=Math.min(1,v.timer/12),dest=new THREE.Vector3(v.seat[0],0,v.seat[1]);
-   n.position.lerpVectors(new THREE.Vector3(0,0,-22),dest,a);
-   n.rotation.y=Math.atan2(dest.x,dest.z+22);
-   n.visible=a>.06;
-   if(a>=1){v.mode='read';v.timer=0}
+   setSeated(n,false);
+   const dest=v.route[v.routeIndex];if(!dest){
+    if(v.mode==='leave'){v.mode='wait';v.timer=0;n.visible=false}
+    else{v.mode='read';v.timer=0}
+    continue;
+   }
+   const dx=dest.x-n.position.x,dz=dest.z-n.position.z,dist=Math.hypot(dx,dz);
+   const step=Math.min(dist,1.45*dt);
+   if(dist>.001){n.position.x+=dx/dist*step;n.position.z+=dz/dist*step;n.rotation.y=Math.atan2(dx,dz)}
+   if(dist<.12)v.routeIndex++;
+   v.walkPhase+=dt*8;
+   n.position.y=.035*Math.abs(Math.sin(v.walkPhase));
+   u.arms[0].rotation.x=.4*Math.sin(v.walkPhase);
+   u.arms[1].rotation.x=-.4*Math.sin(v.walkPhase);
+   u.legs[0].rotation.x=-.35*Math.sin(v.walkPhase);
+   u.legs[1].rotation.x=.35*Math.sin(v.walkPhase);
   }
  }
 }
