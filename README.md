@@ -1,7 +1,6 @@
-# Arcane Archives v0.9.45 — Articulated 3D Fairy
+# Arcane Archives v0.9.46 — Free Fairy Animation Pass
+Upload the four files in this directory to the root of your GitHub Pages repository.
 
-This release removes the flat illustrated fairy plane entirely and uses a fully three-dimensional, hierarchically articulated fairy built with Three.js geometry. Shoulders, elbows, wrists, head, legs, wings, hair and skirt panels animate independently. The wrong-shelf slap, camera reaction, giggle, and exit remain.
+Changes: refined 3D fairy facial details and costume trim, re-timed wing/limb animation, choreographed approach/slap/exit, repaired blink animation. No paid services used. Gameplay and save keys are unchanged.
 
-**Important:** This is a procedural articulated 3D character, NOT a production-quality skinned GLB rig. It has genuine moving 3D parts and can be viewed from different angles, but further character modeling and animation refinement are still needed to match the concept art.
-
-Upload index.html and both .webp ceiling textures to the repository root. Existing save data remains in place.
+Limitations: This is still procedural geometry, not a professionally sculpted rigged GLB. JavaScript syntax checked; mobile Safari visual performance not verified.
