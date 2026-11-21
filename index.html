@@ -1,14 +1,14 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.44</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.45</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
 
-/* v0.9.44 thumb zones: menus above left joystick; action and jump on right */
+/* v0.9.45 thumb zones: menus above left joystick; action and jump on right */
 #buttons{left:12px;right:auto;bottom:calc(144px + env(safe-area-inset-bottom));width:188px;max-width:calc(50vw - 15px);grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;z-index:5}
 #buttons button{padding:9px 4px;font-size:11px;min-width:0}
 #act{position:fixed;left:auto;right:10px;bottom:calc(76px + env(safe-area-inset-bottom));width:165px;max-width:38vw;grid-column:auto;padding:12px 4px!important;z-index:5}
 #jump{position:fixed!important;right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:110px;min-height:52px;z-index:6}
 @media(orientation:portrait){#buttons{left:9px;bottom:calc(203px + env(safe-area-inset-bottom));width:155px;max-width:47vw}#buttons button{font-size:10px;padding:8px 2px}#act{right:9px;bottom:calc(84px + env(safe-area-inset-bottom));width:138px;max-width:43vw}#jump{bottom:calc(20px + env(safe-area-inset-bottom))!important}}
 @media(max-height:450px){#buttons{bottom:calc(132px + env(safe-area-inset-bottom))}#act{bottom:calc(72px + env(safe-area-inset-bottom))}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.44</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.45</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="module">
 const statusBox=document.createElement('div');
 statusBox.id='engineStatus';statusBox.setAttribute('role','status');
@@ -96,7 +96,7 @@ const material=c=>new THREE.MeshStandardMaterial({color:c,roughness:.82}),wood=m
 function box(x,y,z,w,h,d,mat,parent=scene){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);parent.add(m);return m}
 box(0,-.18,0,56,.3,60,stone);for(let x of [-28,28])box(x,6.4,0,.3,12.8,60,stone);for(let z of [-30,30])box(0,6.4,z,56,12.8,.3,stone);
 
-// v0.9.44: Initialize gallery elevations before window geometry uses them.
+// v0.9.45: Initialize gallery elevations before window geometry uses them.
 const GALLERY_TOP=5.89,GALLERY_CENTER=5.72,UPPER_BASE=7.35,ROOF_RISE=2.1;
 // v0.9.26 Sunlit Gothic Windows: lightweight emissive glass and daylight pools.
 // Decorative wall panels do not change collision geometry, stairs or interaction rays.
@@ -229,7 +229,7 @@ for(const z of [-22.7,22.7]){
  for(const x of [-.55,.55])box(x,GALLERY_TOP/2,z,.11,GALLERY_TOP+.22,.13,railWood);
  for(let y=.32;y<GALLERY_TOP+.2;y+=.35)box(0,y,z,1.18,.075,.13,railGold);
 }
-// v0.9.44: illustrated celestial skylight and architectural coffered ceiling.
+// v0.9.45: illustrated celestial skylight and architectural coffered ceiling.
 // All geometry is decorative; navigation, raycasts, stairs, and saved progress are untouched.
 const ceilingY=12.77;
 const ceilingOak=new THREE.MeshStandardMaterial({map:oakTexture,color:0xb18a67,roughness:.73,side:THREE.DoubleSide});
@@ -331,7 +331,7 @@ function ceilingCoffer(x,z,w,d){
 // Coffers fit entirely within the solid border; no overlap with the glass.
 for(const side of [-1,1])for(let z=-26.5;z<=26.51;z+=6.5)ceilingCoffer(side*25.5,z,3.8,5.7);
 for(const side of [-1,1])for(let x=-19.5;x<=19.51;x+=6.5)ceilingCoffer(x,side*27.25,5.7,4.1);
-// v0.9.44: sculptural illuminated glazing and fine metalwork. The full-size
+// v0.9.45: sculptural illuminated glazing and fine metalwork. The full-size
 // celestial artwork is a genuine in-game texture, not a HUD image.
 const giltLight=new THREE.MeshBasicMaterial({color:0xffbc65,side:THREE.DoubleSide});
 const goldMetal=new THREE.MeshStandardMaterial({color:0xf5bd6e,metalness:.75,roughness:.23,emissive:0x4a2308,emissiveIntensity:.32});
@@ -372,7 +372,7 @@ for(const x of [-27.25,27.25])box(x,12.13,0,.065,.065,55,warmTrim);
 for(const z of [-29.1,29.1])box(0,12.13,z,53,.065,.065,warmTrim);
 const skylightFill=new THREE.HemisphereLight(0xfff4e5,0x82706a,1.65);scene.add(skylightFill);
 const softSun=new THREE.DirectionalLight(0xffe3b8,1.35);softSun.position.set(-12,24,-9);scene.add(softSun);
-// v0.9.44: decorative freestanding colonnades and arches removed for clear gallery sightlines.
+// v0.9.45: decorative freestanding colonnades and arches removed for clear gallery sightlines.
 const rugColors=[0xa74682,0x248e9a,0xb34337,0x7845ac,0x315bc5,0xb78a35,0x36865d,0x86664e];
 for(let g=0;g<0;g++){const x=[-23,-18,-13,-8,8,13,18,23][g];for(const level of [0,1]){
  const rug=new THREE.Mesh(new THREE.PlaneGeometry(1.45,45),new THREE.MeshStandardMaterial({color:rugColors[g],roughness:.96,side:THREE.DoubleSide}));rug.rotation.x=-Math.PI/2;rug.position.set(x,level?3.907:.055,0);scene.add(rug);
@@ -510,7 +510,7 @@ function batchOrnaments(geo,mat,positions){
 }
 batchOrnaments(new THREE.BoxGeometry(2.36,.13,.19),gold,crownPlaces);
 batchOrnaments(new THREE.TorusGeometry(.13,.032,5,10),gold,crestPlaces);
-// v0.9.44: shared wall-local book placement, used by spines, gold bands and flight effects.
+// v0.9.45: shared wall-local book placement, used by spines, gold bands and flight effects.
 // Rotate the slot offset and the depth offset together to match the shelf's facing.
 function shelfBookPose(sh,slot,vertical=0,depth=.35){
  const row=Math.floor(slot/8),col=slot%8;
@@ -581,7 +581,7 @@ for(const mesh of [looseMesh,loosePages,looseBindings,looseBackCovers,loosePageE
  mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);
 }
 const looseCovers=coverMats.map(m=>{const mesh=new THREE.InstancedMesh(coverGeometry,m,TOTAL);mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(mesh);return mesh});
-// v0.9.44: physically supported, tapered book mountain.
+// v0.9.45: physically supported, tapered book mountain.
 // The previous generator exhausted its 17 tiers at 12,800 books, then placed
 // remaining books on a repeating spiral with unsupported heights (floating wall).
 // Build one continuous mound using grounded vertical columns instead.
@@ -762,7 +762,7 @@ const decorDark=new THREE.MeshStandardMaterial({color:0x2b2035,roughness:.9});
 const decorStone=new THREE.MeshStandardMaterial({color:0x524458,roughness:.91});
 const runeGlow=new THREE.MeshBasicMaterial({color:0x8c78d4,transparent:true,opacity:.67,depthWrite:false});
 function instancedDecor(geo,mat,positions){const mesh=new THREE.InstancedMesh(geo,mat,positions.length);const d=new THREE.Object3D();positions.forEach(([x,y,z,sx=1,sy=1,sz=1],i)=>{d.position.set(x,y,z);d.scale.set(sx,sy,sz);d.updateMatrix();mesh.setMatrixAt(i,d.matrix)});mesh.instanceMatrix.needsUpdate=true;scene.add(mesh);return mesh}
-// v0.9.44: wall pilasters and capitals removed; structural walls remain.
+// v0.9.45: wall pilasters and capitals removed; structural walls remain.
 // Ceiling coffers and ribs suggest an old vaulted archive, without expensive shadows.
 const coffers=[];const ribEnds=[];
 for(let z=-25;z<=25;z+=5){for(let x=-22;x<=22;x+=5.5){coffers.push([x,12.62,z]);ribEnds.push([x,12.47,z])}}
@@ -913,18 +913,13 @@ function fairyLimb(a,b,r1,r2,mat,parent=fairyRoot){
  const m=fairyPart(new THREE.CylinderGeometry(r2,r1,delta.length(),9),mat,...start.clone().add(end).multiplyScalar(.5).toArray(),parent);
  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return m;
 }
-// v0.9.44: illustrated high-detail character on an alpha-tested camera-facing plane.
-// This replaces the previous primitive-doll rendering while preserving the
-// existing hit reaction, particle trail, audio, cooldown and save behavior.
-const fairyPortraitTexture=new THREE.TextureLoader().load('./archive-fairy.webp');
-fairyPortraitTexture.colorSpace=THREE.SRGBColorSpace;
-const fairyPortraitMat=new THREE.MeshBasicMaterial({map:fairyPortraitTexture,transparent:true,alphaTest:.08,depthWrite:false,side:THREE.DoubleSide});
-const fairyPortrait=new THREE.Mesh(new THREE.PlaneGeometry(1.48,1.66),fairyPortraitMat);
-fairyPortrait.position.set(0,-.02,.14);
-fairyRoot.add(fairyPortrait);
-const fairyBody=new THREE.Group();fairyRoot.add(fairyBody);fairyBody.visible=false;
+// v0.9.45: actual articulated 3D fairy; no billboard, sprite, or portrait plane.
+// Separate joint hierarchies are animated independently in world 3D.
+const fairyBody=new THREE.Group();fairyRoot.add(fairyBody);fairyBody.visible=true;
 const fairyHead=new THREE.Group();fairyBody.add(fairyHead);
 const fairyLegs=[];
+const fairyArms=[];
+const fairyEyes=[];
 const fairyHairLocks=[];
 const fairyCrown=new THREE.Group();fairyHead.add(fairyCrown);
 const fairySparkTrail=[];
@@ -943,6 +938,7 @@ for(const side of [-1,1]){
  fairyEllipsoid(fairyIris,side*.054,.24,.115,.020,.023,.008,fairyHead);
  fairyEllipsoid(fairyPupil,side*.054,.24,.122,.010,.016,.005,fairyHead);
  fairyEllipsoid(fairyWhite,side*.049,.25,.127,.005,.006,.003,fairyHead);
+ const eyelid=fairyEllipsoid(fairySkin,side*.054,.27,.121,.039,.003,.013,fairyHead);fairyEyes.push(eyelid);
  fairyEllipsoid(fairyLip,side*.095,.19,.088,.023,.012,.007,fairyHead).material.color.set(0xd78c8e);
  // delicately pointed ears
  const ear=fairyPart(new THREE.ConeGeometry(.036,.11,8),fairySkin,side*.148,.217,0,fairyHead);
@@ -976,21 +972,48 @@ for(const side of [-1,1]){
  fairyLimb([side*.006,-.11,.008],[side*.025,-.21,.055],.019,.012,fairySkin,leg);
  fairyEllipsoid(fairyGold,side*.027,-.218,.075,.029,.018,.054,leg);
 }
-const fairyArmPivot=new THREE.Group();fairyArmPivot.position.set(.105,.037,.015);fairyBody.add(fairyArmPivot);
-fairyLimb([0,0,0],[.08,-.066,.055],.025,.020,fairySkin,fairyArmPivot);
-fairyLimb([.08,-.066,.055],[.165,-.038,.105],.020,.013,fairySkin,fairyArmPivot);
-fairyEllipsoid(fairySkin,.175,-.034,.109,.027,.033,.012,fairyArmPivot);
-for(let i=0;i<4;i++)fairyLimb([.164+i*.009,-.036,.112],[.169+i*.009,-.070,.119],.006,.003,fairySkin,fairyArmPivot);
-fairyLimb([-.105,.037,.015],[-.175,-.065,.035],.024,.017,fairySkin,fairyBody);
-fairyLimb([-.175,-.065,.035],[-.14,-.155,.086],.017,.011,fairySkin,fairyBody);
-fairyEllipsoid(fairySkin,-.14,-.16,.09,.023,.032,.014,fairyBody);
+// Fully articulated shoulders, elbows, wrists and five-finger hands.
+for(const side of [-1,1]){
+ const shoulder=new THREE.Group();shoulder.position.set(side*.104,.037,.015);fairyBody.add(shoulder);
+ fairyLimb([0,0,0],[side*.092,-.085,.045],.025,.018,fairySkin,shoulder);
+ const elbow=new THREE.Group();elbow.position.set(side*.092,-.085,.045);shoulder.add(elbow);
+ fairyLimb([0,0,0],[side*.077,.01,.069],.018,.012,fairySkin,elbow);
+ const wrist=new THREE.Group();wrist.position.set(side*.077,.01,.069);elbow.add(wrist);
+ fairyEllipsoid(fairySkin,0,0,0,.027,.032,.014,wrist);
+ for(let i=0;i<4;i++)fairyLimb([side*(i-1.5)*.009,-.012,.009],[side*(i-1.5)*.011,-.051,.02],.005,.0025,fairySkin,wrist);
+ fairyLimb([side*.023,.005,.009],[side*.044,-.024,.024],.007,.003,fairySkin,wrist);
+ fairyEllipsoid(fairyGold,0,.009,0,.03,.008,.022,wrist);
+ fairyArms.push({shoulder,elbow,wrist,side});
+}
+const fairyArmPivot=fairyArms[1].shoulder;
+// Layered, three-dimensional petal gown with separate fluttering panels.
+const fairySkirtPanels=[];
+const sheerFairy=new THREE.MeshStandardMaterial({color:0xcda2ff,transparent:true,opacity:.55,side:THREE.DoubleSide,roughness:.55,depthWrite:false});
+for(let i=0;i<12;i++){
+ const angle=i*Math.PI/6;
+ const pivot=new THREE.Group();pivot.rotation.y=angle;pivot.position.y=-.105;fairyBody.add(pivot);
+ const panel=fairyEllipsoid(i%3===0?sheerFairy:fairyDress,0,-.13,.12,.055,.15,.018,pivot);
+ panel.rotation.x=.27;fairySkirtPanels.push({pivot,i});
+}
+// Neck jewel, belt chain and floating ornaments create depth from every view.
+const gemMat=new THREE.MeshStandardMaterial({color:0x853aff,metalness:.35,roughness:.15,emissive:0x4012aa,emissiveIntensity:.5});
+fairyEllipsoid(gemMat,0,.043,.093,.021,.03,.014,fairyBody);
+for(let i=0;i<11;i++){const a=i*Math.PI*2/11;fairyEllipsoid(fairyGold,Math.sin(a)*.105,-.09,Math.cos(a)*.079,.008,.008,.008,fairyBody)}
 const fairyWings=[];
+const wingGlass=new THREE.MeshPhysicalMaterial({color:0x99d9ff,emissive:0x5638ad,emissiveIntensity:.35,metalness:0,roughness:.2,transparent:true,opacity:.67,side:THREE.DoubleSide,depthWrite:false});
 for(const side of [-1,1])for(const upper of [false,true]){
- const wingPivot=new THREE.Group();wingPivot.position.set(side*.062,.01,-.095);fairyBody.add(wingPivot);
- const wing=fairyEllipsoid(fairyWingMat,side*(upper?.14:.115),upper?.11:-.075,-.025,upper?.125:.103,upper?.215:.137,.009,wingPivot);
- wing.rotation.z=side*(upper?-.48:.55);
- const vein=fairyLimb([0,0,0],[side*(upper?.19:.14),upper?.23:-.15,-.02],.007,.002,fairyGold,wingPivot);
- fairyWings.push({wing:wingPivot,side});
+ const wingPivot=new THREE.Group();wingPivot.position.set(side*.065,.012,-.09);fairyBody.add(wingPivot);
+ const h=upper?.36:.23,w=upper?.27:.22;
+ const shape=new THREE.Shape();shape.moveTo(0,0);
+ shape.bezierCurveTo(side*w*.32,h*.42,side*w*.65,h*.98,side*w,h*(upper?1:-.65));
+ shape.bezierCurveTo(side*w*1.12,h*(upper?.4:-1.05),side*w*.7,h*(upper?.05:-.85),side*w*.26,h*(upper?-.05:-.34));
+ shape.quadraticCurveTo(side*w*.12,h*(upper?.06:-.13),0,0);
+ const wing=fairyPart(new THREE.ShapeGeometry(shape,10),wingGlass,0,0,0,wingPivot);
+ for(let j=0;j<4;j++){
+  const f=(j+1)/5;
+  fairyLimb([0,0,.003],[side*w*(.48+.42*f),h*(upper?(.38+.5*f):(-.25-.5*f)),.003],.004,.001,fairyGold,wingPivot);
+ }
+ fairyWings.push({wing:wingPivot,side,upper});
 }
 const fairySparkles=[];
 for(let i=0;i<12;i++){
@@ -1034,17 +1057,23 @@ function animateFairy(now){
  else if(t<1.45){x=-.03+.035*Math.sin(t*9);y=.12+.038*Math.sin(t*20);z=-1.0;}
  else {const u=smooth(Math.min(1,(t-1.45)/1.7));x=-.02+1.45*u+.14*Math.sin(u*8);y=.15+1.05*u+.12*Math.sin(u*12);z=-1-1.1*u;}
  fairyRoot.position.set(x,y,z);
- fairyRoot.rotation.set(.13*Math.sin(t*9),.28*Math.sin(t*6),.15*Math.sin(t*11)+(t>1.45?-.35*Math.sin((t-1.45)*2):0));
+ fairyRoot.rotation.set(.13*Math.sin(t*9),.35*Math.sin(t*6)+(t>1.5?(t-1.5)*2.5:0),.15*Math.sin(t*11)+(t>1.45?-.35*Math.sin((t-1.45)*2):0));
  // Illustrated character hovers, anticipates impact, lunges and spins away.
- fairyPortrait.rotation.z=.035*Math.sin(t*8)+(t>.8&&t<1.1?-.17*Math.sin((t-.8)/.3*Math.PI):0);
- fairyPortrait.scale.setScalar(t>.88&&t<1.09?1+.24*Math.sin((t-.88)/.21*Math.PI):1);
- fairyPortrait.material.opacity=t>2.65?Math.max(0,(3.15-t)/.5):1;
+ // Every moving element is actual geometry with independent joints.
  fairyBody.rotation.z=.12*Math.sin(t*10)+(t>.77&&t<1.08?-.32*Math.sin((t-.77)/.31*Math.PI):0);
  fairyBody.rotation.y=.13*Math.sin(t*7);
  fairyHead.rotation.z=.075*Math.sin(t*6);
- fairyHead.rotation.y=.13*Math.sin(t*4);
- fairyArmPivot.rotation.z=t>.79&&t<1.12?-1.45*Math.sin((t-.79)/.33*Math.PI):.18*Math.sin(t*7);
- for(const {wing,side} of fairyWings){wing.rotation.y=side*(.2+.55*Math.sin(t*47));wing.rotation.z=side*.12*Math.sin(t*47);}
+ fairyHead.rotation.y=.24*Math.sin(t*4);fairyHead.rotation.x=.08*Math.sin(t*3.1);
+ const strike=t>.79&&t<1.12?Math.sin((t-.79)/.33*Math.PI):0;
+ for(const {shoulder,elbow,wrist,side} of fairyArms){
+  shoulder.rotation.z=side*(.18+.13*Math.sin(t*7+side))+(side===1?-1.3*strike:0);
+  shoulder.rotation.x=.14*Math.sin(t*5+side)+(side===1?-.6*strike:0);
+  elbow.rotation.z=side*(.2+.17*Math.sin(t*6+side))+(side===1?-.9*strike:0);
+  wrist.rotation.x=.2*Math.sin(t*9+side)+(side===1?.7*strike:0);
+ }
+ for(const {pivot,i} of fairySkirtPanels)pivot.rotation.z=.09*Math.sin(t*9+i*.7);
+ for(const eye of fairyEyes)eye.scale.y=(Math.sin(t*2.3)> .985)?7:1;
+ for(const {wing,side} of fairyWings){wing.rotation.y=side*(.25+.7*Math.sin(t*31));wing.rotation.z=side*.12*Math.sin(t*47);}
  for(const {leg,side} of fairyLegs){leg.rotation.x=.2+side*.18*Math.sin(t*12);leg.rotation.z=side*.14*Math.sin(t*8);}
  for(const {mesh,side,j,base} of fairyHairLocks){mesh.rotation.z=base+side*.14*Math.sin(t*9-j*.6);}
  for(let i=0;i<fairySparkles.length;i++){
@@ -1229,7 +1258,7 @@ function loop(now){
   camera.position.y+=(desired-camera.position.y)*Math.min(1,dt*12);
   if(Math.abs(camera.position.y-desired)<.05)ladderTravel=false;
  }
- abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.44: Open stair entries and connected landings loaded!');
+ abilityTick(abilityClock(),dt);animateBookFlights(dt);syncLoose();signTick+=dt;if(signTick>.55){signTick=0;refreshShelfNumbers()}hudTick+=dt;if(hudTick>.12){hudTick=0;updateHUD()}renderer.render(scene,camera)}refreshLoose();refreshShelfNumbers();updateHUD();requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=FIXED_FOV;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});statusBox.remove();toast('v0.9.45: Open stair entries and connected landings loaded!');
 } catch(error) {
  console.error('Arcane Archives startup failed:',error);
  statusBox.style.display='block';

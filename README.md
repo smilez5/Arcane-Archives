@@ -1,10 +1,7 @@
-# Arcane Archives v0.9.44 — Fairy Visual Upgrade
+# Arcane Archives v0.9.45 — Articulated 3D Fairy
 
-Upload ALL files in this folder to the repository root, replacing index.html.
+This release removes the flat illustrated fairy plane entirely and uses a fully three-dimensional, hierarchically articulated fairy built with Three.js geometry. Shoulders, elbows, wrists, head, legs, wings, hair and skirt panels animate independently. The wrong-shelf slap, camera reaction, giggle, and exit remain.
 
-- New original illustrated fairy texture (archive-fairy.webp) on a transparent plane.
-- Existing wrong-shelf slap, camera reaction, giggle, particles and cooldown retained.
-- Added fluttering hover, strike emphasis, and fade-out.
-- Existing 12,800 books, progress and save key untouched.
+**Important:** This is a procedural articulated 3D character, NOT a production-quality skinned GLB rig. It has genuine moving 3D parts and can be viewed from different angles, but further character modeling and animation refinement are still needed to match the concept art.
 
-Note: This is a detailed 2.5D camera-facing character, not a rigged 3D model. It will look detailed during the camera-facing encounter but is not viewable from every angle. Mobile browser rendering is not yet verified.
+Upload index.html and both .webp ceiling textures to the repository root. Existing save data remains in place.
