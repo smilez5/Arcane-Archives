@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.72</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.73</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}canvas:not(#mapCanvas){position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
 
 /* v0.9.62 thumb zones: menus above left joystick; action and jump on right */
@@ -8,7 +8,7 @@
 #jump{position:fixed!important;right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:110px;min-height:52px;z-index:6}
 @media(orientation:portrait){#buttons{left:9px;bottom:calc(203px + env(safe-area-inset-bottom));width:155px;max-width:47vw}#buttons button{font-size:10px;padding:8px 2px}#act{right:9px;bottom:calc(84px + env(safe-area-inset-bottom));width:138px;max-width:43vw}#jump{bottom:calc(20px + env(safe-area-inset-bottom))!important}}
 @media(max-height:450px){#buttons{bottom:calc(132px + env(safe-area-inset-bottom))}#act{bottom:calc(72px + env(safe-area-inset-bottom))}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.72</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.73</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js"}}</script>
 <script type="module">
 const statusBox=document.createElement('div');
@@ -45,7 +45,7 @@ const scene=new THREE.Scene();scene.background=new THREE.Color(0x9bb9ca);scene.f
 for(const type of ['gesturestart','gesturechange','gestureend'])document.addEventListener(type,e=>e.preventDefault(),{passive:false});
 renderer.domElement.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
-const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.65,18.0);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
+const FIXED_FOV=72;renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();statusBox.style.display='block';statusBox.textContent='3D graphics context lost. Reload this page to restore the library.'});camera.rotation.order='YXZ';camera.position.set(0,1.78,18.0);const lanternLight=new THREE.PointLight(0xffd58a,0,12,2);scene.add(lanternLight);
 scene.add(new THREE.HemisphereLight(0xf2f2ed,0x5d4b43,1.7));for(let z of [-20,0,20]){let l=new THREE.PointLight(0xe7c6a0,19,35);l.position.set(0,5,z);scene.add(l)};
 // v0.9.26: deterministic hand-painted procedural materials; no remote textures.
 function archiveTexture(kind){
@@ -1338,7 +1338,7 @@ $('map').onclick=()=>{mapFloor=floorNow();mapView()};
 $('help').onclick=()=>{panel('How to Play',`<p>A mischievous fairy scattered 12,800 books across this two-story archive. Restore all 400 thirty-two-volume series on 400 shelves.</p><p><b>Controls:</b> Left thumb joystick to move; right thumb drag to look. Both work simultaneously. Tap PICK UP or PLACE BOOK. Desktop: WASD + mouse drag + E, Space to jump. Mobile: tap JUMP to hop or vault the balcony railing.</p><p><b>Sorting:</b> Pick up to 10 books. Each book has a genre, series and volume (1–32). Find its numbered shelf and place volumes in any order. A complete series earns a skill point.</p><p><b>Keys:</b> Find 6 keys. The upstairs first chest opens with 3 keys and unlocks sprint. The second opens with all 6 and awards mega-jump access (jump physics not yet implemented).</p><p><b>Shelf Sight:</b> Spend 1 skill point in MAGIC to reveal nearby shelf numbers above bookcases. Spend 2 more to extend visibility.</p><p><b>Dropping:</b> Open SATCHEL and tap DROP BOOK. Books remain on the floor and can be recovered.</p><p><b>Progress:</b> Saved on this browser/device. v0.9.6 improves two-way staircase travel and retains precise crosshair targeting and shelf progress to the improved library layout; it remains a foundation build; decoration and navigation remain under development.</p><button id="restart">Reset all progress</button>`);const resetButton=$('content').querySelector('#restart');if(resetButton)resetButton.onclick=()=>{if(confirm('Erase all v0.7 progress?')){localStorage.removeItem(storage);localStorage.removeItem(poseStorage);location.reload()}}};
 let stairTravel=false,upperLevel=false,ladderTravel=false,jumpVelocity=0,jumpOffset=0,jumpQueued=false,fallingFromBalcony=false;
 const jumpButton=document.createElement("button");jumpButton.id="jump";jumpButton.textContent="JUMP";jumpButton.style.cssText="position:fixed;right:12px;bottom:calc(235px + env(safe-area-inset-bottom));z-index:4;background:#66448c;border:1px solid #f1bf66;border-radius:28px;padding:14px 17px;touch-action:manipulation";document.body.appendChild(jumpButton);jumpButton.addEventListener("pointerdown",e=>{e.preventDefault();jumpQueued=true});window.addEventListener("keydown",e=>{if(e.code==="Space"&&!e.repeat){e.preventDefault();jumpQueued=true}});
-const GROUND_EYE=1.65,UPPER_EYE=GALLERY_TOP+1.47;
+const GROUND_EYE=1.78,UPPER_EYE=GALLERY_TOP+1.78;
 const STAIR_TOP=6.2,STAIR_BOTTOM=19.0;
 const BRIDGE_INNER=13.3,BRIDGE_OUTER=20.35;
 function bridgeZone(x,z){return Math.abs(x)>=BRIDGE_INNER&&Math.abs(x)<=BRIDGE_OUTER&&z>=3.05&&z<=7.2;}
@@ -1363,7 +1363,7 @@ addEventListener('pagehide',suspendArchive);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendArchive();else prev=performance.now()});
 addEventListener('blur',suspendArchive);
 
-// v0.9.72 Living Archive: free-standing portal, reading nooks and ambient visitors.
+// v0.9.73 Living Archive: free-standing portal, reading nooks and ambient visitors.
 // Ground floor only. Keep a 4m clear shelf-access corridor along the entire perimeter,
 // and preserve the central book pile, stairs, ladders and existing player movement.
 const living=new THREE.Group();scene.add(living);
@@ -1371,6 +1371,12 @@ const livingWood=new THREE.MeshStandardMaterial({color:0x60402d,roughness:.78});
 const livingGold=new THREE.MeshStandardMaterial({color:0xdcb777,metalness:.35,roughness:.45});
 const livingCloth=new THREE.MeshStandardMaterial({color:0x314d58,roughness:.93});
 const livingPurple=new THREE.MeshStandardMaterial({color:0x654078,roughness:.87});
+// v0.9.73: upgraded coordinated walnut, upholstery and aged brass furniture.
+const furnitureWalnut=new THREE.MeshStandardMaterial({map:oakTexture,color:0xb38c6d,roughness:.66});
+const furnitureDark=new THREE.MeshStandardMaterial({color:0x34201d,roughness:.76});
+const furnitureBrass=new THREE.MeshStandardMaterial({color:0xe7ba6c,metalness:.62,roughness:.32});
+const furnitureVelvet=new THREE.MeshStandardMaterial({color:0x583f72,roughness:.94});
+const furnitureTeal=new THREE.MeshStandardMaterial({color:0x346b72,roughness:.91});
 const portalGlow=new THREE.MeshBasicMaterial({color:0x8c66ee,transparent:true,opacity:.65,side:THREE.DoubleSide,depthWrite:false});
 const portalCore=new THREE.MeshBasicMaterial({color:0x3b94bb,transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false});
 function livingBox(parent,x,y,z,w,h,d,mat){return box(x,y,z,w,h,d,mat,parent)}
@@ -1378,14 +1384,23 @@ function livingSphere(parent,x,y,z,r,mat){const m=new THREE.Mesh(new THREE.Spher
 function livingCylinder(parent,x,y,z,r1,r2,h,mat){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,10),mat);m.position.set(x,y,z);parent.add(m);return m}
 function readingStation(x,z){
  const g=new THREE.Group();g.position.set(x,0,z);living.add(g);
- livingBox(g,0,.78,0,2.6,.16,1.35,livingWood);
- for(const a of [-1,1])for(const b of [-1,1])livingBox(g,a*1.05,.37,b*.48,.13,.72,.13,livingWood);
+ livingBox(g,0,.78,0,2.6,.16,1.35,furnitureWalnut);
+ livingBox(g,0,.855,0,2.75,.045,1.48,furnitureBrass);
+ livingBox(g,0,.888,0,2.55,.05,1.29,furnitureWalnut);
+ for(const zEdge of [-.66,.66])livingBox(g,0,.69,zEdge,2.50,.07,.045,furnitureDark);
+ for(const a of [-1,1])for(const b of [-1,1])livingBox(g,a*1.05,.37,b*.48,.13,.72,.13,furnitureWalnut);
+ for(const zEdge of [-.48,.48])livingSphere(g,a*1.05,.13,zEdge,.065,furnitureBrass);
  for(const a of [-1,1]){
-  livingBox(g,a*1.8,.44,.1,.68,.16,.67,livingCloth);
-  livingBox(g,a*2.12,.88,.1,.14,.95,.72,livingWood);
+  livingBox(g,a*1.8,.44,.1,.68,.16,.67,furnitureVelvet);
+  livingBox(g,a*1.8,.54,.1,.61,.075,.59,furnitureTeal);
+  livingBox(g,a*2.12,.88,.1,.14,.95,.72,furnitureWalnut);
+  livingBox(g,a*2.04,.91,.1,.085,.68,.57,furnitureVelvet);
+  for(const dz of [-.29,.29])livingSphere(g,a*2.12,1.37,.1+dz,.055,furnitureBrass);
   for(const b of [-1,1])livingBox(g,a*1.8,.18,.1+b*.25,.11,.35,.1,livingWood);
  }
- for(let i=0;i<3;i++)livingBox(g,-.7+i*.18,.92,-.13,.13,.12,.35,i%2?livingPurple:livingCloth);
+ for(let i=0;i<3;i++)livingBox(g,-.7+i*.18,.97,-.13,.13,.12,.35,i%2?livingPurple:livingCloth);
+ for(const side of [-1,1]){livingBox(g,side*1.18,.83,0,.055,.06,1.38,furnitureBrass);}
+ const inlay=new THREE.Mesh(new THREE.TorusGeometry(.18,.019,6,20),furnitureBrass);inlay.rotation.x=-Math.PI/2;inlay.position.set(0,.925,0);g.add(inlay);
  const lamp=livingSphere(g,.7,1.06,.2,.13,new THREE.MeshBasicMaterial({color:0xffdf91}));
  return g;
 }
@@ -1407,7 +1422,7 @@ for(let i=0;i<3;i++){
  const r=new THREE.Mesh(new THREE.TorusGeometry(.58+i*.16,.023,5,40),portalGlow);
  r.position.set(0,1.48,.055+i*.015);r.scale.y=1.55;portal.add(r);portalRings.push(r);
 }
-// v0.9.72: mobile-friendly expressive animated fantasy NPCs.
+// v0.9.73: mobile-friendly expressive animated fantasy NPCs.
 const visitors=[];
 const npcSkin=[0x5c3024,0x8c5034,0x3f241c,0xa46b49,0x70402d];
 const npcHair=[0x161118,0x221820,0x17131a,0x32211c,0x211922];
@@ -1451,15 +1466,27 @@ function makeVisitor(robeColor,hat=false,identity=0){
 }
 // Keep stations well away from the shelves and use an actual seated posture.
 const desk=new THREE.Group();desk.position.set(0,0,-16.7);living.add(desk);
-livingBox(desk,0,.95,0,3.2,.19,1.25,livingWood);
-livingBox(desk,0,.48,-.38,3.0,.85,.27,livingWood);
-for(const x of [-1.38,1.38])livingBox(desk,x,.5,.4,.2,.9,.2,livingWood);
-livingBox(desk,.4,1.08,0,.64,.08,.42,livingGold);
-const ledger=livingBox(desk,-.55,1.08,.16,.67,.055,.45,livingPurple);
+livingBox(desk,0,.95,0,3.2,.19,1.25,furnitureWalnut);
+livingBox(desk,0,1.06,0,3.34,.055,1.38,furnitureBrass);
+livingBox(desk,0,1.10,0,3.16,.055,1.25,furnitureWalnut);
+for(const side of [-1,1]){
+ livingBox(desk,side*1.49,.56,.52,.13,.86,.13,furnitureWalnut);
+ livingSphere(desk,side*1.49,1.08,.52,.095,furnitureBrass);
+}
+// Recessed decorative paneling on the public-facing side.
+for(const x of [-.91,0,.91]){
+ livingBox(desk,x,.55,.662,.78,.65,.045,furnitureDark);
+ livingBox(desk,x,.55,.695,.68,.55,.035,furnitureWalnut);
+ livingBox(desk,x,.55,.723,.53,.038,.045,furnitureBrass);
+}
+livingBox(desk,0,.48,-.38,3.0,.85,.27,furnitureWalnut);
+for(const x of [-1.38,1.38])livingBox(desk,x,.5,.4,.2,.9,.2,furnitureWalnut);
+livingBox(desk,.4,1.16,0,.64,.08,.42,furnitureBrass);
+const ledger=livingBox(desk,-.55,1.16,.16,.67,.055,.45,livingPurple);
 // The desk faces the open floor (+Z). The librarian belongs behind its back edge,
 // with the front of her body toward visitors, not on the public side.
 const witch=makeVisitor(0x493064,true,0);witch.position.set(0,0,-17.72);witch.rotation.y=0;
-// v0.9.72: load the generated witch GLB without blocking startup.
+// v0.9.73: load the generated witch GLB without blocking startup.
 // The original procedural character remains available if CDN/model loading fails.
 const WITCH_GLB_URL='https://v3b.fal.media/files/b/0ab35ed9/iBagjLuB27cbzU_Q8k8M-_base_basic_pbr.glb';
 let witchModel=null,witchMixer=null,witchModelReady=false;
