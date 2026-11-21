@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.68</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Arcane Archives v0.9.69</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b20;color:#fff2d7;font:13px system-ui;touch-action:none}canvas{display:block}canvas:not(#mapCanvas){position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important}button{background:#252052ed;border:1px solid #f1bf66;color:#fff1d0;border-radius:11px;padding:10px;font-weight:700;touch-action:manipulation}#top{position:fixed;top:env(safe-area-inset-top,5px);left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}#top>div{background:#151636e8;border:1px solid #8f7b59;border-radius:9px;padding:7px;max-width:72%}#stats{text-align:right;font-size:11px}#cross{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;color:#fbdc89;font-size:24px}#joy{position:fixed;left:18px;bottom:calc(40px + env(safe-area-inset-bottom));width:114px;height:114px;border:2px solid #ffffff50;border-radius:50%;background:#ffffff20;opacity:.35;touch-action:none}#knob{position:absolute;left:35px;top:35px;width:40px;height:40px;border-radius:50%;background:#e8d8f1a8}#buttons{position:fixed;right:9px;bottom:calc(22px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(70px,1fr));gap:7px;max-width:195px}#buttons button{padding:11px 5px}#act{grid-column:span 2;background:#9b4b8e}#hint{position:fixed;left:50%;top:64%;transform:translateX(-50%);max-width:75%;text-align:center;background:#1a1529c9;padding:6px 10px;border-radius:8px;pointer-events:none}#toast{position:fixed;left:50%;top:25%;transform:translateX(-50%);padding:10px;background:#211a48ef;border:1px solid #f1bf66;border-radius:10px;opacity:0;transition:opacity .2s;text-align:center;pointer-events:none;max-width:85%}#panel{display:none;position:fixed;inset:6% 5%;z-index:10;background:#11142cf7;border:1px solid #f1bf66;border-radius:14px;padding:14px;overflow:auto;box-shadow:0 0 0 100vmax #0009}#panel h2{margin:5px 0 12px}#panel button{margin:5px}#content{line-height:1.5}#content button{display:block;width:100%;text-align:left}#content .book{border-bottom:1px solid #77638b;padding:9px 2px}#mapCanvas{width:100%;height:auto;background:#141c3b;border-radius:9px;touch-action:auto}small{opacity:.75}.abilitySelect{padding:10px;border:1px solid #806c95;border-radius:9px}.abilitySelect input{width:100%;font-size:16px;padding:8px;background:#2d2240;color:#fff;border:1px solid #f1bf66;border-radius:6px}.mapTools{display:flex;gap:6px;margin:8px 0}.mapTools button{flex:1;padding:9px 3px;font-size:12px}#mapInfo{padding:10px;background:#20244c;border:1px solid #806c95;border-radius:9px;margin-top:9px;min-height:40px} @media(orientation:portrait){#joy{width:100px;height:100px;bottom:calc(90px + env(safe-area-inset-bottom));left:12px}#knob{left:30px;top:30px;width:36px;height:36px}#buttons{bottom:calc(82px + env(safe-area-inset-bottom));max-width:165px}#buttons button{font-size:11px;padding:9px 4px}#hint{top:60%;font-size:11px}#stats{font-size:10px}}@media(max-height:450px){#joy{bottom:12px}#buttons{bottom:10px}#hint{top:54%}}
 
 /* v0.9.62 thumb zones: menus above left joystick; action and jump on right */
@@ -8,7 +8,7 @@
 #jump{position:fixed!important;right:10px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:110px;min-height:52px;z-index:6}
 @media(orientation:portrait){#buttons{left:9px;bottom:calc(203px + env(safe-area-inset-bottom));width:155px;max-width:47vw}#buttons button{font-size:10px;padding:8px 2px}#act{right:9px;bottom:calc(84px + env(safe-area-inset-bottom));width:138px;max-width:43vw}#jump{bottom:calc(20px + env(safe-area-inset-bottom))!important}}
 @media(max-height:450px){#buttons{bottom:calc(132px + env(safe-area-inset-bottom))}#act{bottom:calc(72px + env(safe-area-inset-bottom))}}
-</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.68</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
+</style></head><body><div id="top"><div><b>✧ Arcane Archives · v0.9.69</b><div id="objective">Loading the enchanted collection…</div><small id="carry">Satchel: 0 / 10</small></div><div id="stats">📚 <span id="progress">0 / 12800</span><br>📖 Rows <span id="rows">0</span> / 400<br>✨ <span id="xp">0</span> XP · <span id="points">0</span> SP</div></div><div id="cross">+</div><div id="joy"><div id="knob"></div></div><div id="hint">Aim at a book or shelf</div><div id="buttons"><button id="inventory">SATCHEL</button><button id="map">MAP</button><button id="skills">MAGIC</button><button id="help">HELP</button><button id="act">PICK UP / PLACE</button></div><div id="toast"></div><div id="panel"><button id="close">✕ Close</button><h2 id="panelTitle"></h2><div id="content"></div></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js"}}</script>
 <script type="module">
 const statusBox=document.createElement('div');
@@ -1363,7 +1363,7 @@ addEventListener('pagehide',suspendArchive);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendArchive();else prev=performance.now()});
 addEventListener('blur',suspendArchive);
 
-// v0.9.68 Living Archive: free-standing portal, reading nooks and ambient visitors.
+// v0.9.69 Living Archive: free-standing portal, reading nooks and ambient visitors.
 // Ground floor only. Keep a 4m clear shelf-access corridor along the entire perimeter,
 // and preserve the central book pile, stairs, ladders and existing player movement.
 const living=new THREE.Group();scene.add(living);
@@ -1407,10 +1407,10 @@ for(let i=0;i<3;i++){
  const r=new THREE.Mesh(new THREE.TorusGeometry(.58+i*.16,.023,5,40),portalGlow);
  r.position.set(0,1.48,.055+i*.015);r.scale.y=1.55;portal.add(r);portalRings.push(r);
 }
-// v0.9.68: mobile-friendly expressive animated fantasy NPCs.
+// v0.9.69: mobile-friendly expressive animated fantasy NPCs.
 const visitors=[];
-const npcSkin=[0x9e6348,0xe3b38c,0xb47b57,0xd5a078,0x80533e];
-const npcHair=[0x251c2a,0x493026,0xe0c5a2,0x382323,0x352b38];
+const npcSkin=[0x5c3024,0x8c5034,0x3f241c,0xa46b49,0x70402d];
+const npcHair=[0x161118,0x221820,0x17131a,0x32211c,0x211922];
 function makeVisitor(robeColor,hat=false,identity=0){
  const g=new THREE.Group();living.add(g);
  const robe=new THREE.MeshStandardMaterial({color:robeColor,roughness:.83,side:THREE.DoubleSide});
@@ -1456,8 +1456,10 @@ livingBox(desk,0,.48,-.38,3.0,.85,.27,livingWood);
 for(const x of [-1.38,1.38])livingBox(desk,x,.5,.4,.2,.9,.2,livingWood);
 livingBox(desk,.4,1.08,0,.64,.08,.42,livingGold);
 const ledger=livingBox(desk,-.55,1.08,.16,.67,.055,.45,livingPurple);
-const witch=makeVisitor(0x493064,true,0);witch.position.set(0,0,-17.5);witch.rotation.y=Math.PI;
-// v0.9.68: load the generated witch GLB without blocking startup.
+// The desk faces the open floor (+Z). The librarian belongs behind its back edge,
+// with the front of her body toward visitors, not on the public side.
+const witch=makeVisitor(0x493064,true,0);witch.position.set(0,0,-17.55);witch.rotation.y=0;
+// v0.9.69: load the generated witch GLB without blocking startup.
 // The original procedural character remains available if CDN/model loading fails.
 const WITCH_GLB_URL='https://v3b.fal.media/files/b/0ab35ed9/iBagjLuB27cbzU_Q8k8M-_base_basic_pbr.glb';
 let witchModel=null,witchMixer=null,witchModelReady=false;
@@ -1478,7 +1480,34 @@ let witchModel=null,witchMixer=null,witchModelReady=false;
   const center=bounds.getCenter(new THREE.Vector3());
   // Center model in its own pivot; keep the feet on the ground.
   model.position.x-=center.x;model.position.z-=center.z;model.position.y-=bounds.min.y;
-  model.traverse(obj=>{if(obj.isMesh){obj.castShadow=false;obj.frustumCulled=true}});
+  // Recolor the existing model's skin-tone texture regions to warm deep brown.
+  // This is a provisional texture adaptation; a purpose-built Black model remains preferable.
+  const tintedMaps=new Map();
+  function toneSkin(map){
+   if(!map?.image || !map.image.width || !map.image.height)return map;
+   if(tintedMaps.has(map))return tintedMaps.get(map);
+   try{
+    const c=document.createElement('canvas');c.width=map.image.width;c.height=map.image.height;
+    const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(map.image,0,0);
+    const im=ctx.getImageData(0,0,c.width,c.height),a=im.data;
+    for(let i=0;i<a.length;i+=4){
+     const r=a[i],g=a[i+1],b=a[i+2],hi=Math.max(r,g,b),lo=Math.min(r,g,b);
+     // Select peach/beige skin shades while leaving purple fabric, teal trim and dark details alone.
+     if(r>104 && g>67 && b>48 && r>g*1.12 && g>b*1.07 && (hi-lo)>22 && (hi-lo)<155){
+      const light=(r+g+b)/765,sh=.72+light*.35;
+      a[i]=Math.round(112*sh);a[i+1]=Math.round(62*sh);a[i+2]=Math.round(43*sh);
+     }
+    }
+    ctx.putImageData(im,0,0);const tx=map.clone();tx.image=c;tx.needsUpdate=true;
+    tintedMaps.set(map,tx);return tx;
+   }catch(e){console.warn('Skin texture adaptation unavailable',e);return map}
+  }
+  model.traverse(obj=>{if(obj.isMesh){
+   obj.castShadow=false;obj.frustumCulled=true;
+   const mats=Array.isArray(obj.material)?obj.material:[obj.material];
+   const adjusted=mats.map(m=>{if(!m)return m;const clone=m.clone();if(clone.map)clone.map=toneSkin(clone.map);return clone});
+   obj.material=Array.isArray(obj.material)?adjusted:adjusted[0];
+  }});
   witch.add(model);witchModel=model;witchModelReady=true;
   // Hide the primitive mesh, but keep the original rig group for existing idle motion.
   for(const child of witch.children){if(child!==model)child.visible=false}
@@ -1487,24 +1516,26 @@ let witchModel=null,witchMixer=null,witchModelReady=false;
 })();
 
 const npcColors=[0x386d75,0x87506d,0x6a7041,0x4e558e];
-const npcStarts=[[0,-22],[-12,-13],[12,13],[12,-13]];
+// Seat anchors are on the OUTSIDE of each table, at the chair centers.
+// Readers face the table rather than intersecting its surface.
+const npcStarts=[[0,-22],[-13.8,-13],[13.8,13],[-13.8,-13]];
 for(let i=0;i<4;i++){
  const npc=makeVisitor(npcColors[i],i===3,i+1);
  npc.position.set(npcStarts[i][0],0,npcStarts[i][1]);
- const seat=readingLocations[i];
+ const station=readingLocations[i];const seat=[station[0]+(station[0]<0?-1.8:1.8),station[1]+.1];
  visitors.push({npc,index:i,mode:i===0?'enter':'read',timer:i*7,seat,start:npc.position.clone(),route:[],routeIndex:0,walkPhase:i*1.2});
 }
 // Aisle-first waypoints keep visitors away from the central book mountain.
 function visitorRoute(from,to){
  const side=to[0]<0?-1:1;
- return [new THREE.Vector3(side*19,0,-21),new THREE.Vector3(side*19,0,to[1]),new THREE.Vector3(to[0],0,to[1])];
+ return [new THREE.Vector3(side*17,0,-20),new THREE.Vector3(side*17,0,to[1]),new THREE.Vector3(to[0],0,to[1])];
 }
 function beginWalk(v,mode){v.mode=mode;v.timer=0;v.routeIndex=0;
  v.route=mode==='leave'?visitorRoute(v.npc.position,[0,-22]).slice(0,2).concat([new THREE.Vector3(0,0,-22)]):visitorRoute(v.npc.position,v.seat);
  // Depart the portal through the same clear outer aisle.
- if(mode==='enter')v.route=[new THREE.Vector3(v.seat[0]<0?-19:19,0,-21),new THREE.Vector3(v.seat[0]<0?-19:19,0,v.seat[1]),new THREE.Vector3(v.seat[0],0,v.seat[1])];
+ if(mode==='enter')v.route=[new THREE.Vector3(v.seat[0]<0?-17:17,0,-21),new THREE.Vector3(v.seat[0]<0?-17:17,0,v.seat[1]),new THREE.Vector3(v.seat[0],0,v.seat[1])];
 }
-function setSeated(n,seated){const u=n.userData;n.scale.y=seated?.83:1;
+function setSeated(n,seated){const u=n.userData;n.scale.y=seated?.76:1;
  u.legs.forEach((leg,i)=>{leg.rotation.x=seated?-1.18:0});
  u.arms.forEach((arm,i)=>{arm.rotation.x=seated?-.7:0});
 }
@@ -1512,7 +1543,7 @@ function animateLivingArchive(dt,now){
  const t=now/1000;
  portalDisk.material.opacity=.43+.12*Math.sin(t*2.2);
  portalRings.forEach((ring,i)=>{ring.rotation.z=t*(i%2?-.38:.27)+i*1.4});
- witch.rotation.y=Math.PI+.10*Math.sin(t*.5);
+ witch.rotation.y=.10*Math.sin(t*.5);
  if(witchModelReady){witchModel.rotation.y=.055*Math.sin(t*.75);witchModel.position.y=.015*Math.sin(t*1.5);witchMixer?.update(dt)}
  witch.userData.arms[0].rotation.x=-.35+.15*Math.sin(t*2.1);
  witch.userData.arms[1].rotation.x=-.55+.18*Math.sin(t*1.6);
@@ -1521,7 +1552,7 @@ function animateLivingArchive(dt,now){
   v.timer+=dt;const n=v.npc,u=n.userData;
   if(v.mode==='read'){
    setSeated(n,true);
-   n.position.y=.035*Math.sin(t*1.2+v.index);
+   n.position.y=-.08+.015*Math.sin(t*1.2+v.index);
    n.rotation.y=v.seat[0]<0?Math.PI/2:-Math.PI/2;
    u.arms[0].rotation.x=-.65+.18*Math.sin(t*.9+v.index);
    u.arms[1].rotation.x=-.65+.12*Math.sin(t*1.1+v.index);
